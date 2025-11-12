@@ -1,6 +1,6 @@
 export default function Hero() {
   return (
-    <section className='min-h-screen flex justify-center items-start pt-[200px]'>
+    <section className='flex justify-center items-center min-h-screen'>
       <div className='flex flex-col gap-4'>
         <p className='hero-intro text-[#64ffda] font-mono'>Hi, my name is</p>
         <div>
@@ -11,7 +11,7 @@ export default function Hero() {
             I build things for the web.
           </h3>
         </div>
-        <p className='max-w-lg text-muted'>
+        <p className='max-w-lg text-muted tracking-wide'>
           I’m a software engineer specializing in building (and occasionally
           designing) exceptional digital experiences. Currently, I’m focused on
           building accessible, human-centered products.

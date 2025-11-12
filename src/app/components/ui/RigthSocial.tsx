@@ -1,6 +1,6 @@
 export default function RightSocial() {
   return (
-    <div className='hidden md:flex fixed bottom-0 right-12 flex-col items-center'>
+    <div className='hidden xl:flex fixed bottom-0 right-12 flex-col items-center'>
       <div className='flex flex-col items-center gap-4'>
         <a
           href='mailto:youremail@example.com'

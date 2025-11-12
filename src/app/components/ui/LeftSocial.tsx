@@ -3,7 +3,7 @@ import { VscGithubAlt } from "react-icons/vsc";
 
 export default function LeftSocial() {
   return (
-    <div className='hidden md:flex fixed bottom-0 left-12 flex-col items-center gap-4'>
+    <div className='hidden xl:flex fixed bottom-0 left-12 flex-col items-center gap-4'>
       <a
         href='https://github.com/baranecp'
         target='_blank'
