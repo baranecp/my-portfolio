@@ -1,4 +1,6 @@
 "use client";
+import HoverAnimate from "./HoverAnimate";
+
 interface Link {
   href: string;
   name: string;
@@ -6,11 +8,13 @@ interface Link {
 
 export default function Link({ href, name }: Link) {
   return (
-    <li className='tracking-widest'>
-      <a href={href} className='flex gap-1'>
-        <span className='text-accent'>#</span>
-        {name}
-      </a>
-    </li>
+    <HoverAnimate y={-3}>
+      <li className='tracking-widest p-1'>
+        <a href={href} className='flex gap-1'>
+          <span className='text-accent'>#</span>
+          {name}
+        </a>
+      </li>
+    </HoverAnimate>
   );
 }

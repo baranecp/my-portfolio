@@ -1,6 +1,6 @@
 export default function Hero() {
   return (
-    <section className='flex justify-center items-center min-h-screen'>
+    <section className='flex items-center min-h-[calc(100vh-107px)]'>
       <div className='flex flex-col gap-4'>
         <p className='hero-intro text-[#64ffda] font-mono'>Hi, my name is</p>
         <div>
