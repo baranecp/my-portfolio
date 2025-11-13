@@ -1,19 +1,25 @@
-import About from "./components/About";
+"use client";
+import { useRef } from "react";
 import Hero from "./components/Hero";
-import Navbar from "./components/Navbar";
+import About from "./components/About";
 import LeftSocial from "./components/ui/LeftSocial";
 import RightSocial from "./components/ui/RigthSocial";
+import Menu from "./components/Menu";
 
 export default function Home() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
   return (
-    <div className='px-12 pt-8'>
+    <div className='relative'>
+      <Menu containerRef={containerRef} />
       <LeftSocial />
       <RightSocial />
-      <Navbar />
-      <main>
-        <Hero />
-        <About />
-      </main>
+      <div ref={containerRef} className='px-12 pt-8'>
+        <main>
+          <Hero />
+          <About />
+        </main>
+      </div>
     </div>
   );
 }
