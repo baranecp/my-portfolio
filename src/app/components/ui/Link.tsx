@@ -1,5 +1,5 @@
 "use client";
-import HoverAnimate from "./HoverAnimate";
+import HoverAnimate from "../animations/HoverAnimate";
 
 interface Link {
   href: string;

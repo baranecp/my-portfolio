@@ -73,7 +73,7 @@ a:hover {
 .bg-noise {
   background-image: url("../../public/noise.jpg");
   opacity: 0.05;
-  mix-blend-mode: overlay;
+  mix-blend-mode: darken;
 }
 
 .spotlight {
