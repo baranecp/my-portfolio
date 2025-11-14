@@ -9,13 +9,14 @@ export default function TopBar() {
 
   return (
     <>
-      <div className='fixed top-8 left-12 right-12 flex justify-between items-center z-30'>
+      <div className='fixed top-8 left-8 right-8 flex justify-between items-center z-40'>
         <Logo />
         <MorphingMenuIcon
           isOpen={isOpen}
           toggleMenu={() => setIsOpen((prev) => !prev)}
         />
       </div>
+
       <Menu isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </>
   );

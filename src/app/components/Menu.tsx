@@ -1,76 +1,96 @@
 "use client";
+import { useRef, useEffect } from "react";
+import Link from "next/link";
+import gsap from "gsap";
+import ParticlesCanvas from "./animations/ParticleCanvas";
 
-import { motion, AnimatePresence } from "framer-motion";
-import { SlClose } from "react-icons/sl";
-import ParticleCanvas from "./animations/ParticleCanvas";
-
-type MenuProps = {
+interface MenuProps {
   isOpen: boolean;
   onClose: () => void;
-};
-
-export default function Menu({ isOpen, onClose }: MenuProps) {
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          key='menu'
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className='fixed inset-0 z-50 flex items-center justify-center'>
-          {/* BACKGROUND MASK */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.9 }}
-            exit={{ opacity: 0 }}
-            className='absolute inset-0 bg-black backdrop-blur-xl z-0'
-          />
-
-          {/* PARTICLES */}
-          <ParticleCanvas active={isOpen} />
-
-          {/* MENU CONTENT */}
-          <motion.div
-            initial={{ y: 80, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 80, opacity: 0 }}
-            transition={{ duration: 0.45, ease: "easeOut" }}
-            className='relative z-10 flex flex-col items-center gap-8 text-white'>
-            {/* Close button */}
-            <button
-              onClick={onClose}
-              className='absolute top-8 right-8 text-3xl hover:text-accent transition'>
-              <SlClose />
-            </button>
-
-            {/* Menu links */}
-            <ul className='flex flex-col text-4xl gap-6'>
-              <MenuItem label='Home' onClick={onClose} />
-              <MenuItem label='About' onClick={onClose} />
-              <MenuItem label='Projects' onClick={onClose} />
-              <MenuItem label='Contact' onClick={onClose} />
-            </ul>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
 }
 
-function MenuItem({ label, onClick }: { label: string; onClick: () => void }) {
+export default function Menu({ isOpen, onClose }: MenuProps) {
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const menuLinks = [
+    { name: "Home", href: "#home" },
+    { name: "About", href: "#about" },
+    { name: "Projects", href: "#projects" },
+    { name: "Contact", href: "#contact" },
+  ];
+
+  useEffect(() => {
+    if (!overlayRef.current || !contentRef.current) return;
+    const overlay = overlayRef.current;
+    const content = contentRef.current;
+
+    if (isOpen) {
+      // Show overlay
+      gsap.set(overlay, { display: "flex", opacity: 0 });
+      gsap.set(content, { opacity: 0, y: 50 });
+
+      const tl = gsap.timeline();
+      tl.to(overlay, { opacity: 1, duration: 0.4, ease: "power1.out" })
+        .to(
+          content,
+          { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
+          "-=0.3"
+        )
+        .fromTo(
+          content.querySelectorAll(".menu-link"),
+          { opacity: 0, y: 30 },
+          {
+            opacity: 1,
+            y: 0,
+            stagger: 0.08,
+            duration: 0.5,
+            ease: "power3.out",
+          },
+          "-=0.4"
+        );
+    } else {
+      const tl = gsap.timeline({
+        onComplete: () => gsap.set(overlay, { display: "none" }),
+      });
+      tl.to(content, {
+        opacity: 0,
+        y: 30,
+        duration: 0.4,
+        ease: "power3.in",
+      }).to(overlay, { opacity: 0, duration: 0.4, ease: "power1.in" }, "-=0.3");
+    }
+  }, [isOpen]);
+
   return (
-    <li
-      onClick={onClick}
-      className='
-        px-6 py-2 rounded-xl
-        text-center
-        transition-all duration-300
-        hover:bg-white/10 hover:text-accent
-        cursor-pointer
-        select-none
-      '>
-      {label}
-    </li>
+    <div
+      ref={overlayRef}
+      className='fixed inset-0 z-30 flex flex-col justify-center items-center overflow-hidden bg-[#0f1930]'>
+      {/* Particles behind content */}
+      <ParticlesCanvas />
+
+      {/* Menu content */}
+      <div
+        ref={overlayRef}
+        className='fixed inset-0 z-30 flex flex-col justify-center items-center overflow-hidden bg-[#0f1930]'>
+        {/* Particles behind content */}
+        <ParticlesCanvas />
+
+        {/* Menu links */}
+        <div
+          ref={contentRef}
+          className='relative z-10 flex flex-col gap-10 px-12 py-8 items-center text-center'>
+          {menuLinks.map((link) => (
+            <Link
+              key={link.name}
+              href={link.href} // keep scroll={false} removed
+              className='menu-link text-white text-5xl font-light px-6 py-2 rounded-md hover:bg-white/10 hover:text-green-400 transition-all duration-300'
+              onClick={onClose}>
+              {link.name}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }

@@ -1,5 +1,4 @@
 "use client";
-
 import { useRef, useState } from "react";
 import gsap from "gsap";
 
@@ -9,7 +8,7 @@ const typingSpeed = 0.08;
 const pauseTime = 0.3;
 
 export default function Logo() {
-  const logoRef = useRef<HTMLDivElement>(null);
+  const logoRef = useRef<HTMLDivElement | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
 
   const handleHover = () => {
@@ -20,7 +19,7 @@ export default function Logo() {
       onComplete: () => setIsAnimating(false),
     });
 
-    // Animate P -> Peter
+    // Animate first part (P -> Peter)
     tl.to(
       {},
       {
@@ -36,7 +35,7 @@ export default function Logo() {
       }
     );
 
-    // Animate B -> Baranec
+    // Animate second part (B -> Baranec)
     tl.to(
       {},
       {
@@ -52,10 +51,10 @@ export default function Logo() {
       }
     );
 
-    // Pause at full text
+    // Pause
     tl.to({}, { duration: pauseTime });
 
-    // Animate backward B -> B
+    // Backward second part
     tl.to(
       {},
       {
@@ -71,7 +70,7 @@ export default function Logo() {
       }
     );
 
-    // Animate backward P -> P (keep B intact)
+    // Backward first part
     tl.to(
       {},
       {
