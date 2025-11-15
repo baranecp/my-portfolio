@@ -14,6 +14,8 @@ export default function Menu({ isOpen, onClose }: MenuProps) {
   const contentRef = useRef<HTMLDivElement>(null);
 
   const [mounted, setMounted] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(true);
+  const [origin, setOrigin] = useState({ x: 50, y: 50 }); // percent of screen
 
   const menuLinks = [
     { name: "Home", href: "#home" },
@@ -22,40 +24,74 @@ export default function Menu({ isOpen, onClose }: MenuProps) {
     { name: "Contact", href: "#contact" },
   ];
 
-  // Only render menu on client to prevent SSR flash
+  // Hydration-safe mount
   useEffect(() => {
     const id = requestAnimationFrame(() => setMounted(true));
     return () => cancelAnimationFrame(id);
   }, []);
 
-  // Lock scroll while menu is open
+  // Track desktop vs mobile
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth >= 768);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Scroll lock
+  useEffect(() => {
+    if (!mounted) return;
+    if (isOpen) document.body.style.overflow = "hidden";
+    else document.body.style.overflow = "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen, mounted]);
+
+  // Track last click position to use as origin
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      const x = (e.clientX / window.innerWidth) * 100;
+      const y = (e.clientY / window.innerHeight) * 100;
+      setOrigin({ x, y });
+    };
+
+    if (isOpen) {
+      window.addEventListener("click", handleClick, { once: true });
+    }
+
+    return () => window.removeEventListener("click", handleClick);
+  }, [isOpen]);
+
+  // GSAP portal animation
   useEffect(() => {
     if (!mounted || !overlayRef.current || !contentRef.current) return;
+
     const overlay = overlayRef.current;
     const content = contentRef.current;
 
-    const isDesktop = window.innerWidth >= 1024;
+    const tl = gsap.timeline({ paused: true });
 
     if (isOpen) {
-      gsap.set(overlay, { display: "flex", opacity: 0 });
+      // Portal circle open from click origin
+      gsap.set(overlay, {
+        display: "flex",
+        clipPath: `circle(0% at ${origin.x}% ${origin.y}%)`,
+        opacity: 1,
+      });
       gsap.set(content, { opacity: 0, y: 50 });
 
-      const tl = gsap.timeline();
       tl.to(overlay, {
-        opacity: 1,
-        duration: isDesktop ? 0.4 : 0.2,
-        ease: "power1.out",
+        clipPath: `circle(150% at ${origin.x}% ${origin.y}%)`,
+        duration: 0.8,
+        ease: "power2.out",
       }).to(
         content,
-        {
-          opacity: 1,
-          y: 0,
-          duration: isDesktop ? 0.6 : 0.2,
-          ease: "power3.out",
-        },
-        "-=0.3"
+        { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
+        "-=0.6"
       );
 
+      // Menu links stagger
       if (isDesktop) {
         tl.fromTo(
           content.querySelectorAll(".menu-link"),
@@ -70,87 +106,46 @@ export default function Menu({ isOpen, onClose }: MenuProps) {
           "-=0.4"
         );
       } else {
-        // Mobile: fade in all links at once
         tl.to(
           content.querySelectorAll(".menu-link"),
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.2,
-            ease: "power3.out",
-          },
+          { opacity: 1, y: 0, duration: 0.2 },
           "-=0.2"
         );
       }
+
+      tl.play();
     } else {
-      const tl = gsap.timeline({
+      // Portal circle close
+      const closeTl = gsap.timeline({
         onComplete: () => {
           gsap.set(overlay, { display: "none" });
         },
       });
-      tl.to(content, {
-        opacity: 0,
-        y: 30,
-        duration: isDesktop ? 0.4 : 0.2,
-        ease: "power3.in",
-      }).to(
-        overlay,
-        { opacity: 0, duration: isDesktop ? 0.4 : 0.2, ease: "power1.in" },
-        "-=0.3"
-      );
-    }
-  }, [isOpen, mounted]);
-
-  useEffect(() => {
-    if (!mounted || !overlayRef.current || !contentRef.current) return;
-    const overlay = overlayRef.current;
-    const content = contentRef.current;
-
-    if (isOpen) {
-      gsap.set(overlay, { display: "flex", opacity: 0 });
-      gsap.set(content, { opacity: 0, y: 50 });
-
-      const tl = gsap.timeline();
-      tl.to(overlay, { opacity: 1, duration: 0.4, ease: "power1.out" })
+      closeTl
+        .to(content, { opacity: 0, y: 30, duration: 0.3, ease: "power3.in" })
         .to(
-          content,
-          { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
-          "-=0.3"
-        )
-        .fromTo(
-          content.querySelectorAll(".menu-link"),
-          { opacity: 0, y: 30 },
+          overlay,
           {
-            opacity: 1,
-            y: 0,
-            stagger: 0.08,
-            duration: 0.5,
-            ease: "power3.out",
+            clipPath: `circle(0% at ${origin.x}% ${origin.y}%)`,
+            duration: 0.6,
+            ease: "power2.in",
           },
-          "-=0.4"
+          "-=0.2"
         );
-    } else {
-      const tl = gsap.timeline({
-        onComplete: () => {
-          gsap.set(overlay, { display: "none" });
-        },
-      });
-      tl.to(content, {
-        opacity: 0,
-        y: 30,
-        duration: 0.4,
-        ease: "power3.in",
-      }).to(overlay, { opacity: 0, duration: 0.4, ease: "power1.in" }, "-=0.3");
+      closeTl.play();
     }
-  }, [isOpen, mounted]);
+  }, [isOpen, mounted, isDesktop, origin]);
 
-  if (!mounted) return null; // Don't render on server
+  if (!mounted) return null;
 
   return (
     <div
       ref={overlayRef}
-      className='fixed inset-0 z-30 flex flex-col justify-center items-center overflow-hidden bg-[#0f1930]'>
-      <ParticleBackground />
+      className='fixed inset-0 z-30 flex justify-center items-center overflow-hidden bg-[#0f1930]'>
+      {/* Particles only on desktop */}
+      {isDesktop && <ParticleBackground />}
+
+      {/* Menu content */}
       <div
         ref={contentRef}
         className='relative z-10 flex flex-col gap-10 px-12 py-8 items-center text-center'>
