@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Fira_Code } from "next/font/google";
 import "./globals.css";
 import FlashlightWrapper from "./components/animations/FlashlightWrapper";
-import ParticlesBackground from "./components/animations/ParticleBackground";
+import ParticleBackground from "./components/animations/ParticleBackground";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -31,7 +31,7 @@ export default function RootLayout({
     <html lang='en'>
       <body
         className={`${inter.variable} ${firaCode.variable} antialiased scrollbar-hide`}>
-        <ParticlesBackground />
+        <ParticleBackground />
         <FlashlightWrapper>{children}</FlashlightWrapper>
       </body>
     </html>
