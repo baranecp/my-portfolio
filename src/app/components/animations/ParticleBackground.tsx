@@ -1,62 +1,76 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 export default function ParticleBackground() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [isDesktop, setIsDesktop] = useState(false);
+  const isDesktop = useRef<boolean>(false);
 
+  // Detect desktop using matchMedia (faster + cleaner)
   useEffect(() => {
-    const handleResize = () => {
-      setIsDesktop(window.innerWidth >= 768);
-    };
+    const mq = window.matchMedia("(min-width: 768px)");
+    const update = () => (isDesktop.current = mq.matches);
 
-    handleResize(); // initial check
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
   }, []);
 
   useEffect(() => {
-    if (!isDesktop) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const ctx = canvas.getContext("2d")!;
-    const width = (canvas.width = window.innerWidth);
-    const height = (canvas.height = window.innerHeight);
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
 
     const mouse = { x: width / 2, y: height / 2 };
 
-    const particleCount = window.innerWidth < 1024 ? 30 : 90;
-    const particles = Array.from({ length: particleCount }, () => ({
-      x: Math.random() * width,
-      y: Math.random() * height,
-      vx: (Math.random() - 0.5) * 0.3,
-      vy: (Math.random() - 0.5) * 0.3,
-      size: Math.random() * 2 + 1,
-      colorShift: Math.random() * 360,
-    }));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let particles: any[] = [];
+    let animationId: number;
+
+    const setupParticles = () => {
+      const count = window.innerWidth < 1024 ? 30 : 90;
+      particles = Array.from({ length: count }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        size: Math.random() * 2 + 1,
+        colorShift: Math.random() * 360,
+      }));
+    };
+
+    setupParticles();
 
     const handleMouse = (e: MouseEvent) => {
       mouse.x = e.clientX;
       mouse.y = e.clientY;
     };
+
+    const handleResize = () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+      setupParticles();
+    };
+
     window.addEventListener("mousemove", handleMouse);
+    window.addEventListener("resize", handleResize);
 
     let frame = 0;
-    let animationId: number;
 
-    function loop() {
+    const loop = () => {
+      animationId = requestAnimationFrame(loop);
+
+      if (!isDesktop.current) return;
+
       frame++;
-      if (window.innerWidth < 1024 && frame % 2 !== 0) {
-        animationId = requestAnimationFrame(loop);
-        return;
-      }
+      if (window.innerWidth < 1024 && frame % 2 !== 0) return; // throttle on mobile
 
       ctx.clearRect(0, 0, width, height);
 
-      // update particles
-      for (let i = 0; i < particles.length; i++) {
-        const p = particles[i];
+      // particles
+      for (const p of particles) {
         p.x += p.vx;
         p.y += p.vy;
 
@@ -81,17 +95,17 @@ export default function ParticleBackground() {
         ctx.shadowColor = ctx.fillStyle;
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
         ctx.fill();
-        ctx.closePath();
       }
 
-      // draw lines
+      // lines
       for (let i = 0; i < particles.length; i++) {
-        const p = particles[i];
         for (let j = i + 1; j < particles.length; j++) {
+          const p = particles[i];
           const p2 = particles[j];
           const dx = p2.x - p.x;
           const dy = p2.y - p.y;
           const d = Math.sqrt(dx * dx + dy * dy);
+
           if (d < 90) {
             ctx.beginPath();
             ctx.strokeStyle = `hsla(${
@@ -101,21 +115,19 @@ export default function ParticleBackground() {
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(p2.x, p2.y);
             ctx.stroke();
-            ctx.closePath();
           }
         }
       }
-
-      animationId = requestAnimationFrame(loop);
-    }
+    };
 
     loop();
 
     return () => {
       window.removeEventListener("mousemove", handleMouse);
+      window.removeEventListener("resize", handleResize);
       cancelAnimationFrame(animationId);
     };
-  }, [isDesktop]);
+  }, []);
 
   return (
     <canvas
