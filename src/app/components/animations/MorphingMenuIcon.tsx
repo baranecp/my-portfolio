@@ -1,6 +1,9 @@
 "use client";
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+
+gsap.registerPlugin(useGSAP);
 
 interface MorphingMenuIconProps {
   isOpen: boolean;
@@ -11,27 +14,40 @@ export default function MorphingMenuIcon({
   isOpen,
   toggleMenu,
 }: MorphingMenuIconProps) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
   const topRef = useRef<HTMLDivElement | null>(null);
   const middleRef = useRef<HTMLDivElement | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    const tl = gsap.timeline({
-      defaults: { duration: 0.28, ease: "power2.inOut" },
-    });
-    if (isOpen) {
-      tl.to(topRef.current, { y: 7, rotate: 45 })
-        .to(middleRef.current, { opacity: 0 }, 0)
-        .to(bottomRef.current, { y: -7, rotate: -45 }, 0);
-    } else {
-      tl.to(topRef.current, { y: 0, rotate: 0 })
-        .to(middleRef.current, { opacity: 1 }, 0)
-        .to(bottomRef.current, { y: 0, rotate: 0 }, 0);
-    }
-  }, [isOpen]);
+  useGSAP(
+    () => {
+      gsap.to(topRef.current, {
+        y: isOpen ? 7 : 0,
+        rotate: isOpen ? 45 : 0,
+        duration: 0.28,
+        ease: "power2.inOut",
+      });
+
+      gsap.to(middleRef.current, {
+        opacity: isOpen ? 0 : 1,
+        duration: 0.28,
+        ease: "power2.inOut",
+      });
+
+      gsap.to(bottomRef.current, {
+        y: isOpen ? -7 : 0,
+        rotate: isOpen ? -45 : 0,
+        duration: 0.28,
+        ease: "power2.inOut",
+      });
+    },
+    { dependencies: [isOpen], scope: containerRef }
+  );
 
   return (
     <div
+      ref={containerRef}
       onClick={toggleMenu}
       className='w-10 h-10 flex flex-col justify-center items-center cursor-pointer gap-1'
       aria-label='Toggle menu'

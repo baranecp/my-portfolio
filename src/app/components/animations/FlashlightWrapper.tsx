@@ -1,8 +1,10 @@
 "use client";
-import { useEffect, useRef, ReactNode, useState } from "react";
+
+import { useRef, ReactNode, useState } from "react";
 import gsap from "gsap";
-import Lenis from "@studio-freight/lenis";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Lenis from "@studio-freight/lenis";
+import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -16,76 +18,82 @@ export default function FlashlightWrapper({
   radius = 600,
 }: FlashlightWrapperProps) {
   const spotlightRef = useRef<HTMLDivElement | null>(null);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
   const [showSpotlight, setShowSpotlight] = useState(false);
 
-  // Detect desktop and handle window resize
-  useEffect(() => {
-    if (typeof window === "undefined") return;
+  // Detect desktop & update spotlight toggle
+  useGSAP(
+    () => {
+      if (typeof window === "undefined") return;
 
-    const updateSpotlight = () => {
-      setShowSpotlight(window.innerWidth >= 1024);
-    };
+      const update = () => {
+        setShowSpotlight(window.innerWidth >= 1024);
+      };
 
-    // Defer initial update to avoid cascading render
-    const id = requestAnimationFrame(updateSpotlight);
+      update(); // first sync
+      window.addEventListener("resize", update);
 
-    // Listen to window resize
-    window.addEventListener("resize", updateSpotlight);
+      return () => {
+        window.removeEventListener("resize", update);
+      };
+    },
+    { dependencies: [] }
+  );
 
-    return () => {
-      cancelAnimationFrame(id);
-      window.removeEventListener("resize", updateSpotlight);
-    };
-  }, []);
+  // Lenis smooth scrolling when spotlight is active
+  useGSAP(
+    () => {
+      if (!showSpotlight) return;
 
-  // Lenis smooth scrolling only when spotlight active
-  useEffect(() => {
-    if (!showSpotlight) return;
-
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
-    });
-
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-    requestAnimationFrame(raf);
-
-    lenis.on("scroll", () => ScrollTrigger.update());
-
-    return () => lenis.destroy();
-  }, [showSpotlight]);
-
-  // Spotlight follows mouse only when active
-  useEffect(() => {
-    if (!showSpotlight) return;
-
-    const el = spotlightRef.current;
-    if (!el) return;
-
-    gsap.set(el, { x: -9999, y: -9999, autoAlpha: 1 });
-
-    const move = (e: MouseEvent) => {
-      gsap.to(el, {
-        duration: 0.35,
-        x: e.clientX,
-        y: e.clientY,
-        ease: "power3.out",
+      const lenis = new Lenis({
+        duration: 1.2,
+        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        smoothWheel: true,
       });
-    };
 
-    window.addEventListener("mousemove", move);
-    return () => window.removeEventListener("mousemove", move);
-  }, [showSpotlight]);
+      function raf(time: number) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+      }
+      requestAnimationFrame(raf);
+
+      lenis.on("scroll", () => ScrollTrigger.update());
+
+      return () => lenis.destroy();
+    },
+    { dependencies: [showSpotlight] }
+  );
+
+  // Spotlight mouse movement
+  useGSAP(
+    () => {
+      if (!showSpotlight) return;
+
+      const el = spotlightRef.current;
+      if (!el) return;
+
+      gsap.set(el, { x: -9999, y: -9999, autoAlpha: 1 });
+
+      const move = (e: MouseEvent) => {
+        gsap.to(el, {
+          x: e.clientX,
+          y: e.clientY,
+          duration: 0.35,
+          ease: "power3.out",
+        });
+      };
+
+      window.addEventListener("mousemove", move);
+
+      return () => window.removeEventListener("mousemove", move);
+    },
+    { dependencies: [showSpotlight], scope: wrapperRef }
+  );
 
   return (
-    <div className='relative min-h-screen'>
+    <div ref={wrapperRef} className='relative min-h-screen'>
       <div className='absolute inset-0 bg-noise z-40 pointer-events-none' />
 
-      {/* spotlight only renders on desktop */}
       {showSpotlight && (
         <div
           ref={spotlightRef}
