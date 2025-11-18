@@ -11,7 +11,6 @@ interface HoverFancyProps {
   scale?: number;
   rotate?: number;
   hoverColor?: string;
-  originalColor?: string;
   shadow?: boolean;
   duration?: number;
 }
@@ -22,7 +21,6 @@ export default function HoverFancy({
   scale = 1.05,
   rotate = 0,
   hoverColor,
-  originalColor,
   shadow = true,
   duration = 0.35,
 }: HoverFancyProps) {

@@ -1,4 +1,5 @@
 "use client";
+
 import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import gsap from "gsap";
@@ -61,7 +62,7 @@ export default function Menu({ isOpen, onClose }: MenuProps) {
     return () => window.removeEventListener("click", handleClick);
   }, [isOpen]);
 
-  // GSAP animations using useGSAP
+  // GSAP animations
   useGSAP(
     () => {
       const overlay = overlayRef.current;
@@ -72,7 +73,7 @@ export default function Menu({ isOpen, onClose }: MenuProps) {
       const tl = gsap.timeline({ paused: true });
 
       if (isOpen) {
-        // Portal open
+        // Open menu
         gsap.set(overlay, {
           display: "flex",
           clipPath: `circle(0% at ${origin.x}% ${origin.y}%)`,
@@ -119,9 +120,10 @@ export default function Menu({ isOpen, onClose }: MenuProps) {
 
         tl.play();
       } else {
-        // Portal close
+        // Close menu
         const closeTl = gsap.timeline({
           onComplete: () => {
+            // Hide overlay only after animation finishes
             gsap.set(overlay, { display: "none" });
           },
         });
@@ -145,20 +147,19 @@ export default function Menu({ isOpen, onClose }: MenuProps) {
     { scope: overlayRef, dependencies: [isOpen, origin, isDesktop, mounted] }
   );
 
-  if (!mounted) return null;
+  // Hide overlay initially to prevent flash
+  if (!mounted) return <div style={{ display: "none" }} />;
 
   return (
     <div
       ref={overlayRef}
       className='fixed inset-0 z-30 flex justify-center items-center overflow-hidden bg-[#0f1930]'>
-      {/* Particles only on desktop */}
       {isDesktop && (
         <div ref={particlesRef}>
           <ParticleBackground />
         </div>
       )}
 
-      {/* Menu content */}
       <div
         ref={contentRef}
         className='relative z-10 flex flex-col gap-10 px-12 py-8 items-center text-center'>
