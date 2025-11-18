@@ -4,7 +4,7 @@ import HoverAnimate from "../animations/HoverAnimate";
 
 export default function LeftSocial() {
   return (
-    <div className='hidden xl:flex fixed bottom-0 left-12 flex-col items-center gap-4 z-50'>
+    <div className='left-social hidden xl:flex fixed bottom-0 left-12 flex-col items-center gap-4 z-50'>
       <HoverAnimate y={-10}>
         <a
           href='https://github.com/baranecp'

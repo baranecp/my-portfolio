@@ -3,7 +3,7 @@ import HoverAnimate from "../animations/HoverAnimate";
 
 export default function RightSocial() {
   return (
-    <div className='hidden xl:flex fixed bottom-0 right-12 flex-col items-center z-50'>
+    <div className='right-social hidden xl:flex fixed bottom-0 right-12 flex-col items-center z-50'>
       <div className='flex flex-col items-center gap-4'>
         <HoverAnimate y={-10}>
           <a

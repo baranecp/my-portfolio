@@ -1,59 +1,99 @@
 "use client";
 
-import { ReactNode, useRef, useEffect } from "react";
+import { ReactNode, useRef } from "react";
 import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+gsap.registerPlugin(useGSAP);
 
-interface HoverAnimateProps {
+interface HoverFancyProps {
   children: ReactNode;
   y?: number;
   scale?: number;
+  rotate?: number;
   hoverColor?: string;
   originalColor?: string;
+  shadow?: boolean;
   duration?: number;
 }
 
-export default function HoverAnimate({
+export default function HoverFancy({
   children,
-  y,
-  scale,
+  y = -4,
+  scale = 1.05,
+  rotate = 0,
   hoverColor,
   originalColor,
-  duration = 0.3,
-}: HoverAnimateProps) {
+  shadow = true,
+  duration = 0.35,
+}: HoverFancyProps) {
   const ref = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!ref.current) return;
-    const el = ref.current;
+  useGSAP(
+    () => {
+      if (!ref.current) return;
 
-    const onHover = () => {
-      gsap.to(el, {
+      const el = ref.current;
+
+      // Create one timeline for hover and reverse for leave
+      const tl = gsap.timeline({ paused: true });
+
+      tl.to(el, {
         y,
         scale,
+        rotate,
         color: hoverColor || undefined,
         duration,
-        ease: "power2.out",
+        ease: "power3.out",
       });
-    };
 
-    const onLeave = () => {
-      gsap.to(el, {
-        y: 0,
-        scale: 1,
-        color: originalColor || undefined,
-        duration,
-        ease: "power2.out",
-      });
-    };
+      // Add subtle shadow expansion
+      if (shadow) {
+        tl.to(
+          el,
+          {
+            boxShadow: "0px 8px 20px rgba(0,0,0,0.25)",
+            duration,
+            ease: "power3.out",
+          },
+          "<" // sync with previous animation
+        );
+      }
 
-    el.addEventListener("mouseenter", onHover);
-    el.addEventListener("mouseleave", onLeave);
+      // Clip reveal "shine" effect (very subtle)
+      tl.to(
+        el,
+        {
+          clipPath: "inset(0% 0% 0% 0%)",
+          duration: 0.25,
+          ease: "power2.out",
+        },
+        "<0.05"
+      );
 
-    return () => {
-      el.removeEventListener("mouseenter", onHover);
-      el.removeEventListener("mouseleave", onLeave);
-    };
-  }, [y, scale, hoverColor, originalColor, duration]);
+      const onHover = () => tl.play();
+      const onLeave = () => tl.reverse();
 
-  return <div ref={ref}>{children}</div>;
+      el.addEventListener("mouseenter", onHover);
+      el.addEventListener("mouseleave", onLeave);
+
+      // Cleanup auto-handled by useGSAP, but remove listeners manually
+      return () => {
+        el.removeEventListener("mouseenter", onHover);
+        el.removeEventListener("mouseleave", onLeave);
+      };
+    },
+    { scope: ref }
+  );
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        display: "inline-block",
+        clipPath: "inset(0% 0% 0% 0%)",
+        transition: "clip-path 0.3s ease-out",
+      }}>
+      {children}
+    </div>
+  );
 }

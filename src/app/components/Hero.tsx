@@ -4,9 +4,9 @@ import { forwardRef } from "react";
 const Hero = forwardRef<HTMLDivElement>((props, ref) => {
   return (
     <section
-      id='home'
+      id='hero'
       ref={ref}
-      className='hero flex flex-col items-center justify-center min-h-screen px-8 gap-4'>
+      className='hero flex flex-col justify-center min-h-screen px-8 gap-4'>
       <p className='text-[#64ffda] font-mono'>Hi, my name is</p>
       <h1 className='text-[clamp(2.5rem,8vw,5rem)] font-bold'>
         Peter Baranec.
