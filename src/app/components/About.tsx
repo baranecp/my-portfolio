@@ -1,7 +1,10 @@
 "use client";
 import { forwardRef } from "react";
+import { useSectionAnimation } from "../hooks/useSectionAnimation";
 
 const About = forwardRef<HTMLDivElement>((props, ref) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  useSectionAnimation(ref as any);
   return (
     <section
       id='about'
@@ -9,13 +12,13 @@ const About = forwardRef<HTMLDivElement>((props, ref) => {
       className='about flex flex-col lg:flex-row items-center justify-center min-h-screen px-8 py-32 gap-16'>
       <div className='flex flex-col max-w-4xl text-xl lg:text-2xl leading-loose space-y-10'>
         <div className='flex items-center gap-4 text-4xl mb-10'>
-          <h2 className='font-sans'>
+          <h2 data-animate className='font-sans'>
             <span className='text-accent'>#</span> About Me
           </h2>
-          <div className='h-px w-70 bg-[#8892b0]'></div>
+          <div data-animate className='h-px w-70 bg-[#8892b0]'></div>
         </div>
 
-        <p>
+        <p data-animate>
           Hi! I’m Peter, a self-taught frontend developer passionate about
           crafting clean, responsive, and visually engaging web experiences. I
           work mainly with <span className='text-accent'>React</span>,
@@ -25,7 +28,7 @@ const About = forwardRef<HTMLDivElement>((props, ref) => {
           <span className='text-accent'> GSAP</span>.
         </p>
 
-        <p>
+        <p data-animate>
           My path to coding wasn’t typical — I studied
           <span className='text-accent'> electrical engineering</span>, worked
           as an electronics technician and later served in the army as a
@@ -34,13 +37,13 @@ const About = forwardRef<HTMLDivElement>((props, ref) => {
           passion.
         </p>
 
-        <p>
+        <p data-animate>
           I’m a <span className='text-accent'>dynamic and curious person</span>{" "}
           who loves learning new things and improving every day. I adapt quickly
           and take every challenge head-on.
         </p>
 
-        <p>
+        <p data-animate>
           When I’m not coding, you’ll find me{" "}
           <span className='text-accent'>
             training at the gym, playing games
