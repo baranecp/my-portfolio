@@ -44,9 +44,17 @@ export default function Menu({ isOpen, onClose }: MenuProps) {
   // Scroll lock
   useEffect(() => {
     if (!mounted) return;
-    document.body.style.overflow = isOpen ? "hidden" : "";
+    if (!isOpen) return;
+
+    const scrollY = window.scrollY;
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = "100%";
+
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.top = "";
+      window.scrollTo(0, scrollY);
     };
   }, [isOpen, mounted]);
 
