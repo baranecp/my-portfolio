@@ -46,6 +46,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+[data-animate] {
+  will-change: transform, opacity;
+}
+
 section {
   max-width: 1000px;
   margin: 0 auto;

@@ -71,7 +71,7 @@ const Projects = forwardRef<HTMLDivElement>((_props, ref) => {
             and responsive UI.
           </p>
 
-          <div className='flex flex-wrap gap-2'>
+          <div data-animate className='flex flex-wrap gap-2'>
             {[
               "Next.js",
               "TypeScript",
@@ -81,7 +81,6 @@ const Projects = forwardRef<HTMLDivElement>((_props, ref) => {
               "React Query",
             ].map((tech) => (
               <span
-                data-animate
                 key={tech}
                 className='px-3 py-1 text-sm rounded-lg bg-[#233554] text-[#a8b2d1]'>
                 {tech}

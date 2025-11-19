@@ -3,6 +3,7 @@ import { Inter, Fira_Code } from "next/font/google";
 import "./globals.css";
 import FlashlightWrapper from "./components/animations/FlashlightWrapper";
 import ParticleBackground from "./components/animations/ParticleBackground";
+import GpuBalancer from "./components/animations/GpuBalancer";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -31,7 +32,7 @@ export default function RootLayout({
     <html lang='en'>
       <body
         className={`${inter.variable} ${firaCode.variable} antialiased scrollbar-hide`}>
-        <ParticleBackground />
+        <GpuBalancer />
         <FlashlightWrapper>{children}</FlashlightWrapper>
       </body>
     </html>

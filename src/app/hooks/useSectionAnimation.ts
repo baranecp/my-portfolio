@@ -1,4 +1,5 @@
 "use client";
+
 import { RefObject } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -12,48 +13,48 @@ export function useSectionAnimation(
 ) {
   const stagger = options?.stagger ?? 0.15;
 
-  useGSAP(
-    () => {
-      const el = ref.current;
-      if (!el) return;
+  useGSAP(() => {
+    const el = ref.current;
+    if (!el) return;
 
-      const elements = el.querySelectorAll("[data-animate]");
+    const elements = el.querySelectorAll("[data-animate]");
 
-      // Initially hide all elements
-      gsap.set(elements, { autoAlpha: 0, y: 40 });
+    // Smooth animations with will-change
+    elements.forEach(
+      (el) => ((el as HTMLElement).style.willChange = "opacity, transform")
+    );
 
-      // Batch animations so multiple triggers are smoother
-      ScrollTrigger.batch(elements, {
-        start: "top 80%", // triggers even if section is partially visible
-        end: "bottom 10%",
-        onEnter: (batch) => {
-          gsap.to(batch, {
-            autoAlpha: 1,
-            y: 0,
-            ease: "power3.out",
-            duration: 0.8,
-            stagger: stagger,
-          });
-        },
-        onLeaveBack: (batch) => {
-          gsap.to(batch, {
-            autoAlpha: 0,
-            y: 40,
-            ease: "power3.out",
-            duration: 0.8,
-            stagger: stagger,
-          });
-        },
-      });
+    gsap.set(elements, { autoAlpha: 0, y: 40 });
 
-      // Refresh ScrollTrigger if needed
-      ScrollTrigger.refresh();
+    ScrollTrigger.batch(elements, {
+      start: "top 80%",
+      end: "bottom 20%",
+      onEnter: (batch) => {
+        gsap.to(batch, {
+          autoAlpha: 1,
+          y: 0,
+          ease: "power3.out",
+          duration: 0.6,
+          stagger,
+        });
+      },
+      onLeaveBack: (batch) => {
+        gsap.to(batch, {
+          autoAlpha: 0,
+          y: 40,
+          ease: "power3.out",
+          duration: 0.6,
+          stagger,
+        });
+      },
+    });
 
-      // Cleanup
-      return () => {
-        ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-      };
-    },
-    { dependencies: [ref] }
-  );
+    if ("requestIdleCallback" in window) {
+      requestIdleCallback(() => ScrollTrigger.refresh());
+    } else {
+      setTimeout(() => ScrollTrigger.refresh(), 100);
+    }
+
+    return () => ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+  }, [ref]);
 }

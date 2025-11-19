@@ -21,88 +21,72 @@ export default function FlashlightWrapper({
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const [showSpotlight, setShowSpotlight] = useState(false);
 
-  // Detect desktop & update spotlight toggle
-  useGSAP(
-    () => {
-      if (typeof window === "undefined") return;
+  // Detect desktop
+  useGSAP(() => {
+    if (typeof window === "undefined") return;
+    const update = () => setShowSpotlight(window.innerWidth >= 1024);
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
 
-      const update = () => {
-        setShowSpotlight(window.innerWidth >= 1024);
-      };
+  // Lenis smooth scroll + throttled ScrollTrigger update
+  useGSAP(() => {
+    if (!showSpotlight) return;
 
-      update(); // first sync
-      window.addEventListener("resize", update);
+    const lenis = new Lenis({
+      duration: 0.8,
+      easing: (t) => t, // linear easing for performance
+      smoothWheel: true,
+    });
 
-      return () => {
-        window.removeEventListener("resize", update);
-      };
-    },
-    { dependencies: [] }
-  );
-
-  // Lenis smooth scrolling when spotlight is active
-  useGSAP(
-    () => {
-      if (!showSpotlight) return;
-
-      const lenis = new Lenis({
-        duration: 1.2,
-        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        smoothWheel: true,
-      });
-
-      function raf(time: number) {
-        lenis.raf(time);
-        requestAnimationFrame(raf);
+    let ticking = false;
+    function raf(time: number) {
+      lenis.raf(time);
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          ScrollTrigger.update();
+          ticking = false;
+        });
+        ticking = true;
       }
       requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
 
-      lenis.on("scroll", () => ScrollTrigger.update());
-
-      return () => lenis.destroy();
-    },
-    { dependencies: [showSpotlight] }
-  );
+    return () => lenis.destroy();
+  }, [showSpotlight]);
 
   // Spotlight mouse movement
-  useGSAP(
-    () => {
-      if (!showSpotlight) return;
+  useGSAP(() => {
+    if (!showSpotlight) return;
+    const el = spotlightRef.current;
+    if (!el) return;
 
-      const el = spotlightRef.current;
-      if (!el) return;
+    gsap.set(el, { x: -9999, y: -9999, autoAlpha: 1 });
 
-      gsap.set(el, { x: -9999, y: -9999, autoAlpha: 1 });
-
-      const move = (e: MouseEvent) => {
-        gsap.to(el, {
-          x: e.clientX,
-          y: e.clientY,
-          duration: 0.35,
-          ease: "power3.out",
-        });
-      };
-
-      window.addEventListener("mousemove", move);
-
-      return () => window.removeEventListener("mousemove", move);
-    },
-    { dependencies: [showSpotlight], scope: wrapperRef }
-  );
+    const move = (e: MouseEvent) => {
+      gsap.to(el, {
+        x: e.clientX,
+        y: e.clientY,
+        duration: 0.35,
+        ease: "power3.out",
+      });
+    };
+    window.addEventListener("mousemove", move);
+    return () => window.removeEventListener("mousemove", move);
+  }, [showSpotlight]);
 
   return (
-    <div ref={wrapperRef} className='relative min-h-screen'>
-      <div className='absolute inset-0 bg-noise z-40 pointer-events-none' />
-
+    <div ref={wrapperRef} className='relative'>
       {showSpotlight && (
         <div
           ref={spotlightRef}
-          className='spotlight z-50'
+          className='spotlight z-50 pointer-events-none'
           style={{ width: radius, height: radius }}
         />
       )}
-
-      <div className='relative z-60'>{children}</div>
+      {children}
     </div>
   );
 }

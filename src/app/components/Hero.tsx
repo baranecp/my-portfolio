@@ -24,11 +24,7 @@ const Hero = forwardRef<HTMLDivElement>((_props, ref) => {
 
     // Bounce animation
     const tl = gsap.timeline({ repeat: -1, yoyo: true });
-    tl.to(arrowRef.current, { y: 12, duration: 0.8, ease: "power1.inOut" }).to(
-      textRef.current,
-      { y: 6, duration: 0.8, ease: "power1.inOut" },
-      0
-    );
+    tl.to(arrowRef.current, { y: 12, duration: 0.8, ease: "power1.inOut" });
 
     // Fade out on scroll
     gsap.to([arrowRef.current, textRef.current], {
