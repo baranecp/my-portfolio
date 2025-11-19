@@ -161,7 +161,7 @@ export default function Menu({ isOpen, onClose }: MenuProps) {
   return (
     <div
       ref={overlayRef}
-      className='fixed inset-0 z-30 flex justify-center items-center overflow-hidden bg-[#0f1930]'>
+      className='fixed inset-0 z-60 flex justify-center items-center overflow-hidden bg-[#0f1930]'>
       {isDesktop && (
         <div ref={particlesRef}>
           <ParticleBackground />
