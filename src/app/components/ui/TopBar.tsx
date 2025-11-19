@@ -9,7 +9,7 @@ export default function TopBar() {
 
   return (
     <>
-      <div className='topbar fixed top-8 left-8 right-8 flex justify-between items-center z-40'>
+      <div className='topbar fixed top-8 left-8 right-8 flex justify-between items-center z-70'>
         <Logo />
         <MorphingMenuIcon
           isOpen={isOpen}

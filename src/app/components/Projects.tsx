@@ -119,17 +119,17 @@ const Projects = forwardRef<HTMLDivElement>((_props, ref) => {
           <div
             key={i}
             data-animate
-            className='p-6 rounded-xl bg-[#112240] border border-[#233554] hover:border-accent hover:bg-[#1a2a47] transition cursor-pointer'>
+            className='p-6 rounded-xl  border border-[#233554] hover:border-accent hover:bg-[#1a2a47] transition'>
             <h4 className='text-xl font-semibold mb-3'>{project.title}</h4>
 
-            <p data-animate className='text-[#a8b2d1] leading-relaxed mb-4'>
+            <p className='text-[#a8b2d1] leading-relaxed mb-4'>
               {project.description}
             </p>
 
             <a
               href={project.github}
               target='_blank'
-              className='flex items-center gap-2 text-accent hover:underline'>
+              className='flex items-center gap-2 text-accent hover:underline cursor-pointer'>
               <FiGithub /> GitHub
             </a>
           </div>
