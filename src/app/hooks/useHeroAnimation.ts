@@ -19,20 +19,19 @@ export function useHeroAnimation(ref: RefObject<HTMLElement>) {
         { autoAlpha: 1, y: 0 },
         {
           autoAlpha: 0,
-          y: 20, // smaller movement for smoother feel
-          ease: "power2.out",
-          stagger: 0.08,
+          y: -40,
+          ease: "power3.out",
+          duration: 1,
+          stagger: 0.15,
           scrollTrigger: {
             trigger: el,
             start: "top top",
-            end: "bottom top",
-            scrub: 0.5, // smooth scrub
+            end: "bottom 50%",
+            scrub: true,
             invalidateOnRefresh: true,
           },
         }
       );
-
-      return () => ScrollTrigger.getAll().forEach((t) => t.kill());
     },
     { dependencies: [ref] }
   );

@@ -24,7 +24,7 @@ export function useSectionAnimation(
 
       // Batch animations so multiple triggers are smoother
       ScrollTrigger.batch(elements, {
-        start: "top 90%", // triggers even if section is partially visible
+        start: "top 80%", // triggers even if section is partially visible
         end: "bottom 10%",
         onEnter: (batch) => {
           gsap.to(batch, {
