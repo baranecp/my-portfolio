@@ -93,7 +93,7 @@ const Projects = forwardRef<HTMLDivElement>((_props, ref) => {
               data-animate
               href='#'
               target='_blank'
-              className='flex items-center gap-2 px-4 py-2 border border-accent text-accent rounded-lg hover:bg-accent hover:text-black transition'>
+              className='flex items-center gap-2 px-4 py-2 border border-accent text-accent rounded-lg hover:bg-accent hover:text-black transition-colors duration-300'>
               <FiGithub /> GitHub
             </a>
 
@@ -101,7 +101,7 @@ const Projects = forwardRef<HTMLDivElement>((_props, ref) => {
               data-animate
               href='#'
               target='_blank'
-              className='flex items-center gap-2 px-4 py-2 border border-accent text-accent rounded-lg hover:bg-accent hover:text-black transition'>
+              className='flex items-center gap-2 px-4 py-2 border border-accent text-accent rounded-lg hover:bg-accent hover:text-black transition-colors duration-300'>
               <FiExternalLink /> Live Demo
             </a>
           </div>

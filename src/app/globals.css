@@ -61,10 +61,6 @@ a {
   cursor: pointer;
 }
 
-a:hover {
-  color: var(--accent);
-}
-
 .scrollbar-hide {
   -ms-overflow-style: none; /* IE & Edge */
   scrollbar-width: none; /* Firefox */
