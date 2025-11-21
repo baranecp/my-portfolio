@@ -43,8 +43,6 @@ export default function HoverFancy({
         duration,
         ease: "power3.out",
       });
-
-      // Add subtle shadow expansion
       if (shadow) {
         tl.to(
           el,
@@ -56,8 +54,6 @@ export default function HoverFancy({
           "<" // sync with previous animation
         );
       }
-
-      // Clip reveal "shine" effect (very subtle)
       tl.to(
         el,
         {
@@ -74,7 +70,7 @@ export default function HoverFancy({
       el.addEventListener("mouseenter", onHover);
       el.addEventListener("mouseleave", onLeave);
 
-      // Cleanup auto-handled by useGSAP, but remove listeners manually
+      // Remove listeners manually
       return () => {
         el.removeEventListener("mouseenter", onHover);
         el.removeEventListener("mouseleave", onLeave);

@@ -16,27 +16,36 @@ const Hero = forwardRef<HTMLDivElement>((_props, ref) => {
   const arrowRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
 
-  // GSAP scroll indicator animation
   useGSAP(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const heroEl = (ref as any).current;
-    if (!arrowRef.current || !textRef.current || !heroEl) return;
+    if (!heroEl || !arrowRef.current || !textRef.current) return;
 
-    // Bounce animation
-    const tl = gsap.timeline({ repeat: -1, yoyo: true });
-    tl.to(arrowRef.current, { y: 12, duration: 0.8, ease: "power1.inOut" });
+    // Scoped GSAP context for automatic cleanup
+    const ctx = gsap.context(() => {
+      // Bounce animation
+      gsap.to(arrowRef.current, {
+        y: 12,
+        duration: 0.8,
+        ease: "power1.inOut",
+        repeat: -1,
+        yoyo: true,
+      });
 
-    // Fade out on scroll
-    gsap.to([arrowRef.current, textRef.current], {
-      autoAlpha: 0,
-      scrollTrigger: {
-        trigger: heroEl,
-        start: "top top",
-        end: "bottom 50%",
-        scrub: true,
-        invalidateOnRefresh: true,
-      },
-    });
+      // Fade out on scroll
+      gsap.to([arrowRef.current, textRef.current], {
+        autoAlpha: 0,
+        scrollTrigger: {
+          trigger: heroEl,
+          start: "top top",
+          end: "bottom 50%",
+          scrub: true,
+          invalidateOnRefresh: true,
+        },
+      });
+    }, heroEl);
+
+    return () => ctx.revert(); // cleanup context on unmount
   }, [ref]);
 
   return (

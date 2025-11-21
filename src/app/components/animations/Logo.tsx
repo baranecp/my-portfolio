@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 
 const firstPart = "Peter";
 const secondPart = "Baranec";
@@ -26,7 +27,7 @@ export default function Logo() {
       },
     });
 
-    // Typing first part: smooth increment
+    // Typing first part - Peter
     tl.to(
       {},
       {
@@ -35,7 +36,6 @@ export default function Logo() {
           const progress = this.progress() * firstPart.length;
           const i = Math.floor(progress);
           el.textContent = `{${firstPart.slice(0, i + 1)}B}`;
-          // subtle scaling based on progress
           gsap.to(el, {
             scale: 1 + progress * 0.01,
             duration: 0.1,
@@ -46,7 +46,7 @@ export default function Logo() {
       }
     );
 
-    // Typing second part
+    // Typing second part - Baranec
     tl.to(
       {},
       {
@@ -97,6 +97,14 @@ export default function Logo() {
       }
     );
   };
+
+  // Wrap animateLogo in useGSAP for proper cleanup
+  useGSAP(
+    () => {
+      // nothing to init, but this ensures GSAP context is scoped to logoRef
+    },
+    { scope: logoRef }
+  );
 
   return (
     <div

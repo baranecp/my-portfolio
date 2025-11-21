@@ -7,26 +7,27 @@ import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(ScrollTrigger);
 
+interface UseSectionAnimationOptions {
+  stagger?: number;
+}
+
 export function useSectionAnimation(
   ref: RefObject<HTMLElement>,
-  options?: { stagger?: number }
+  options?: UseSectionAnimationOptions
 ) {
   const stagger = options?.stagger ?? 0.15;
 
   useGSAP(() => {
-    const el = ref.current;
-    if (!el) return;
+    const container = ref.current;
+    if (!container) return;
 
-    const elements = el.querySelectorAll("[data-animate]");
+    const elements = container.querySelectorAll<HTMLElement>("[data-animate]");
 
-    // Smooth animations with will-change
-    elements.forEach(
-      (el) => ((el as HTMLElement).style.willChange = "opacity, transform")
-    );
+    elements.forEach((el) => (el.style.willChange = "opacity, transform"));
 
     gsap.set(elements, { autoAlpha: 0, y: 40 });
 
-    ScrollTrigger.batch(elements, {
+    const triggers = ScrollTrigger.batch(elements, {
       start: "top 80%",
       end: "bottom 20%",
       onEnter: (batch) => {
@@ -55,6 +56,9 @@ export function useSectionAnimation(
       setTimeout(() => ScrollTrigger.refresh(), 100);
     }
 
-    return () => ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-  }, [ref]);
+    return () => {
+      triggers.forEach((t) => t.kill());
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+    };
+  }, [ref, stagger]);
 }

@@ -5,7 +5,7 @@ export default function ParticleBackground() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const isDesktop = useRef<boolean>(false);
 
-  // Detect desktop using matchMedia (faster + cleaner)
+  // Detect desktop using matchMedia
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 768px)");
     const update = () => (isDesktop.current = mq.matches);
@@ -24,7 +24,6 @@ export default function ParticleBackground() {
     let height = (canvas.height = window.innerHeight);
 
     const mouse = { x: width / 2, y: height / 2 };
-
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let particles: any[] = [];
     let animationId: number;
@@ -65,11 +64,11 @@ export default function ParticleBackground() {
       if (!isDesktop.current) return;
 
       frame++;
-      if (window.innerWidth < 1024 && frame % 2 !== 0) return; // throttle on mobile
+      if (window.innerWidth < 1024 && frame % 2 !== 0) return; // throttle mobile
 
       ctx.clearRect(0, 0, width, height);
 
-      // particles
+      // Draw particles
       for (const p of particles) {
         p.x += p.vx;
         p.y += p.vy;
@@ -97,7 +96,7 @@ export default function ParticleBackground() {
         ctx.fill();
       }
 
-      // lines
+      // Draw lines
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const p = particles[i];

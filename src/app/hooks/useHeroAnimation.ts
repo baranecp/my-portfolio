@@ -12,7 +12,12 @@ export function useHeroAnimation(ref: RefObject<HTMLElement>) {
       const el = ref.current;
       if (!el) return;
 
-      const elements = el.querySelectorAll("[data-animate]");
+      const elements = Array.from(
+        el.querySelectorAll<HTMLElement>("[data-animate]")
+      );
+
+      // Ensure elements have will-change for smoother animations
+      elements.forEach((el) => (el.style.willChange = "opacity, transform"));
 
       gsap.fromTo(
         elements,
@@ -32,6 +37,13 @@ export function useHeroAnimation(ref: RefObject<HTMLElement>) {
           },
         }
       );
+
+      return () => {
+        // Clean up ScrollTriggers created in this hero
+        ScrollTrigger.getAll()
+          .filter((st) => st.trigger === el)
+          .forEach((st) => st.kill());
+      };
     },
     { dependencies: [ref] }
   );

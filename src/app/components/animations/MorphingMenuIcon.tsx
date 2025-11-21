@@ -3,8 +3,6 @@ import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 
-gsap.registerPlugin(useGSAP);
-
 interface MorphingMenuIconProps {
   isOpen: boolean;
   toggleMenu: () => void;
@@ -15,7 +13,6 @@ export default function MorphingMenuIcon({
   toggleMenu,
 }: MorphingMenuIconProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
-
   const topRef = useRef<HTMLDivElement | null>(null);
   const middleRef = useRef<HTMLDivElement | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);

@@ -19,42 +19,50 @@ export default function FlashlightWrapper({
 }: FlashlightWrapperProps) {
   const spotlightRef = useRef<HTMLDivElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
+
   const [showSpotlight, setShowSpotlight] = useState(false);
 
   // Detect desktop
   useGSAP(() => {
-    if (typeof window === "undefined") return;
     const update = () => setShowSpotlight(window.innerWidth >= 1024);
     update();
     window.addEventListener("resize", update);
     return () => window.removeEventListener("resize", update);
   }, []);
 
-  // Lenis smooth scroll + throttled ScrollTrigger update
+  // Lenis smooth scroll + ScrollTrigger sync
   useGSAP(() => {
     if (!showSpotlight) return;
 
     const lenis = new Lenis({
       duration: 0.8,
-      easing: (t) => t, // linear easing for performance
+      easing: (t: number) => t,
       smoothWheel: true,
     });
 
+    let rafId: number;
     let ticking = false;
-    function raf(time: number) {
+
+    const raf = (time: number) => {
       lenis.raf(time);
+
       if (!ticking) {
+        ticking = true;
         requestAnimationFrame(() => {
           ScrollTrigger.update();
           ticking = false;
         });
-        ticking = true;
       }
-      requestAnimationFrame(raf);
-    }
-    requestAnimationFrame(raf);
 
-    return () => lenis.destroy();
+      rafId = requestAnimationFrame(raf);
+    };
+
+    rafId = requestAnimationFrame(raf);
+
+    return () => {
+      lenis.destroy();
+      cancelAnimationFrame(rafId);
+    };
   }, [showSpotlight]);
 
   // Spotlight mouse movement
@@ -73,6 +81,7 @@ export default function FlashlightWrapper({
         ease: "power3.out",
       });
     };
+
     window.addEventListener("mousemove", move);
     return () => window.removeEventListener("mousemove", move);
   }, [showSpotlight]);
