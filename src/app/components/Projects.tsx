@@ -33,6 +33,7 @@ const Projects = forwardRef<HTMLDivElement>((_props, ref) => {
     <section
       ref={ref}
       id='projects'
+      aria-labelledby='projects-heading'
       className='mx-auto px-6 py-24 min-h-screen'>
       <div
         data-animate
@@ -115,11 +116,21 @@ const Projects = forwardRef<HTMLDivElement>((_props, ref) => {
 
       <div className='grid md:grid-cols-3 gap-8'>
         {smallProjects.map((project, i) => (
-          <div
+          <article
             key={i}
             data-animate
+            aria-labelledby={`project-title-${i}`}
+            tabIndex={0}
+            onClick={() => window.open(project.github, "_blank")}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") window.open(project.github, "_blank");
+            }}
             className='p-6 rounded-xl  border border-[#233554] hover:border-accent hover:bg-[#1a2a47] transition'>
-            <h4 className='text-xl font-semibold mb-3'>{project.title}</h4>
+            <h4
+              id={`project-title-${i}`}
+              className='text-xl font-semibold mb-3'>
+              {project.title}
+            </h4>
 
             <p className='text-[#a8b2d1] leading-relaxed mb-4'>
               {project.description}
@@ -128,10 +139,11 @@ const Projects = forwardRef<HTMLDivElement>((_props, ref) => {
             <a
               href={project.github}
               target='_blank'
+              rel='noopener noreferrer'
               className='flex items-center gap-2 text-accent hover:underline cursor-pointer'>
               <FiGithub /> GitHub
             </a>
-          </div>
+          </article>
         ))}
       </div>
     </section>

@@ -51,6 +51,7 @@ const Hero = forwardRef<HTMLDivElement>((_props, ref) => {
   return (
     <section
       ref={ref}
+      aria-labelledby='hero-heading'
       className='hero flex flex-col justify-center min-h-screen px-8 gap-2 lg:gap-4 text-center lg:text-left relative'>
       <div>
         <p data-animate className='text-[#64ffda] font-mono text-lg'>
@@ -78,14 +79,17 @@ const Hero = forwardRef<HTMLDivElement>((_props, ref) => {
 
         <a
           data-animate
-          href='#'
-          className='inline-block border border-accent text-accent px-8 py-3 rounded font-mono hover:bg-accent/10 transition-all duration-300 mt-6'>
+          href='#contact'
+          aria-label='Scroll to contact section'
+          className='inline-block border border-accent text-accent px-8 py-3 rounded font-mono hover:bg-accent/10 transition-all duration-300 mt-6 focus:outline-2 focus:outline-accent'>
           Get in touch!
         </a>
       </div>
 
       {/* Scroll Indicator */}
-      <div className='fixed bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-1'>
+      <div
+        aria-hidden='true'
+        className='fixed bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-1'>
         <div
           ref={textRef}
           className='text-accent font-mono text-sm select-none'>

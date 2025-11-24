@@ -3,6 +3,7 @@ import { Inter, Fira_Code } from "next/font/google";
 import "./globals.css";
 import FlashlightWrapper from "./components/animations/FlashlightWrapper";
 import ParticleBackground from "./components/animations/ParticleBackground";
+import LoaderWrapper from "./components/LoaderWrapper";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -17,7 +18,7 @@ const firaCode = Fira_Code({
 });
 
 export const metadata: Metadata = {
-  title: "Peter Baranec — Frontend Developer",
+  title: "Peter Baranec",
   description:
     "Personal portfolio website built with Next.js, Tailwind, and GSAP.",
 };
@@ -32,7 +33,9 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${firaCode.variable} antialiased scrollbar-hide`}>
         <ParticleBackground />
-        <FlashlightWrapper>{children}</FlashlightWrapper>
+        <LoaderWrapper>
+          <FlashlightWrapper>{children}</FlashlightWrapper>
+        </LoaderWrapper>
       </body>
     </html>
   );

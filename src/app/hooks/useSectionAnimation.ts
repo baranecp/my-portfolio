@@ -35,7 +35,7 @@ export function useSectionAnimation(
           autoAlpha: 1,
           y: 0,
           ease: "power3.out",
-          duration: 0.6,
+          duration: 0.8,
           stagger,
         });
       },
@@ -44,7 +44,7 @@ export function useSectionAnimation(
           autoAlpha: 0,
           y: 40,
           ease: "power3.out",
-          duration: 0.6,
+          duration: 0.8,
           stagger,
         });
       },

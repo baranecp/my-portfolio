@@ -9,10 +9,11 @@ const About = forwardRef<HTMLDivElement>((props, ref) => {
     <section
       id='about'
       ref={ref}
+      aria-labelledby='about-heading'
       className='about flex flex-col lg:flex-row items-center justify-center min-h-screen px-8 py-32 gap-16'>
       <div className='flex flex-col max-w-4xl text-xl lg:text-2xl leading-loose space-y-10'>
         <div className='flex items-center gap-4 text-4xl mb-10'>
-          <h2 data-animate className='font-sans'>
+          <h2 id='about-heading' data-animate className='font-sans'>
             <span className='text-accent'>#</span> About Me
           </h2>
           <div data-animate className='h-px w-70 bg-[#8892b0]'></div>

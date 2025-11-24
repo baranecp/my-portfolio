@@ -11,9 +11,10 @@ const Contact = forwardRef<HTMLDivElement>((_props, ref) => {
     <section
       ref={ref}
       id='contact'
+      aria-labelledby='contact-heading'
       className='min-h-screen flex flex-col justify-center items-center px-8 text-center gap-6 relative'>
       <div className='flex items-center gap-4 text-4xl mb-10'>
-        <h2 data-animate className='font-sans'>
+        <h2 id='contact-heading' data-animate className='font-sans'>
           <span className='text-accent'>#</span> What&apos;s Next
         </h2>
         <div data-animate className='h-px w-70 bg-[#8892b0]'></div>
