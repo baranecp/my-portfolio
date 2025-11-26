@@ -35,7 +35,7 @@ export default function FlashlightWrapper({
     if (!showSpotlight) return;
 
     const lenis = new Lenis({
-      duration: 1.2,
+      duration: 1,
       easing: (t: number) => t,
       smoothWheel: true,
     });

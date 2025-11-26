@@ -7,7 +7,7 @@ export default function RightSocial() {
       <div className='flex flex-col items-center gap-4'>
         <HoverAnimate y={-10}>
           <a
-            href='mailto:youremail@example.com'
+            href='mailto:baranec.dev@gmail.com'
             className='text-mute hover:text-[#a1ffe4] font-mono text-[0.85rem] [writing-mode:vertical-rl] tracking-widest'>
             baranec.dev@gmail.com
           </a>
