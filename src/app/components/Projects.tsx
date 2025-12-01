@@ -136,7 +136,6 @@ const Projects = forwardRef<HTMLDivElement>((_props, ref) => {
             <p className='text-[#a8b2d1] leading-relaxed mb-4'>
               {project.description}
             </p>
-
             <a
               href={project.github}
               target='_blank'
@@ -146,6 +145,17 @@ const Projects = forwardRef<HTMLDivElement>((_props, ref) => {
             </a>
           </article>
         ))}
+      </div>
+      <div className='flex justify-center mt-6'>
+        <a
+          data-animate
+          target='_blank'
+          rel='noopener noreferrer'
+          href='https://github.com/baranecp?tab=repositories'
+          aria-label='View all projects on GitHub'
+          className='inline-block mx-auto border border-accent text-accent px-8 py-3 rounded font-mono hover:bg-accent/10 transition-all duration-300 mt-6 focus:outline-2 focus:outline-accent'>
+          See All Projects
+        </a>
       </div>
     </section>
   );
