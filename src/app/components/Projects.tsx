@@ -10,22 +10,22 @@ const Projects = forwardRef<HTMLDivElement>((_props, ref) => {
 
   const smallProjects = [
     {
-      title: "Workout Planner",
+      title: "Todo",
       description:
-        "A simple fitness workout planning tool where users can build routines and track muscle group volume.",
-      github: "#",
+        "A simple, modern Todo application built with vanilla JavaScript, Webpack, and localStorage for persistent data storage.",
+      github: "https://github.com/baranecp/Todo",
     },
     {
-      title: "Anime Dashboard",
+      title: "Etch-a-Sketch",
       description:
-        "Dashboard that lists anime, allows searching, and includes filters using public APIs.",
-      github: "#",
+        "Etch-a-Sketch style drawing application built using HTML, CSS, and JavaScript. Users can draw on a grid-based board, choose custom colors, enable rainbow mode, and use an eraser.",
+      github: "https://github.com/baranecp/etch-a-sketch",
     },
     {
-      title: "Healthy Recipes",
+      title: "Memory Game",
       description:
-        "Minimal UI recipe browser with nutritional stats and favorites stored in localStorage.",
-      github: "#",
+        "MemoryCard is a lightweight browser game where players flip cards to find matching pairs. It's implemented with React and bundled with Vite.",
+      github: "https://github.com/baranecp/MemoryCard",
     },
   ];
 
@@ -52,6 +52,7 @@ const Projects = forwardRef<HTMLDivElement>((_props, ref) => {
           data-animate
           className='w-full h-full rounded-xl overflow-hidden border border-[#233554]'>
           <Image
+            priority
             src='/finance-app-preview.svg'
             alt='Finance App Preview'
             width={800}
@@ -92,7 +93,7 @@ const Projects = forwardRef<HTMLDivElement>((_props, ref) => {
           <div className='flex gap-4 pt-2'>
             <a
               data-animate
-              href='#'
+              href='https://github.com/baranecp/finance-app'
               target='_blank'
               className='flex items-center gap-2 px-4 py-2 border border-accent text-accent rounded-lg hover:bg-accent hover:text-black transition-colors duration-300'>
               <FiGithub /> GitHub
@@ -100,7 +101,7 @@ const Projects = forwardRef<HTMLDivElement>((_props, ref) => {
 
             <a
               data-animate
-              href='#'
+              href='https://finance-app-beta-henna.vercel.app/'
               target='_blank'
               className='flex items-center gap-2 px-4 py-2 border border-accent text-accent rounded-lg hover:bg-accent hover:text-black transition-colors duration-300'>
               <FiExternalLink /> Live Demo
