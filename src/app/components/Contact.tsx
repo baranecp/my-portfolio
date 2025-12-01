@@ -32,7 +32,7 @@ const Contact = forwardRef<HTMLDivElement>((_props, ref) => {
       {/* Contact button */}
       <a
         data-animate
-        href='mailto:youremail@example.com'
+        href='mailto:baranec.dev@gmail.com'
         className='inline-block max-w-xs w-full border border-accent text-accent px-8 py-3 rounded font-mono hover:bg-accent/10 transition-all duration-300'>
         Get in Touch
       </a>
