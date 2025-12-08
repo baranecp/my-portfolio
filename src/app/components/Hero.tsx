@@ -50,6 +50,7 @@ const Hero = forwardRef<HTMLDivElement>((_props, ref) => {
 
   return (
     <section
+      id='home'
       ref={ref}
       aria-labelledby='hero-heading'
       className='hero flex flex-col justify-center min-h-screen px-8 gap-2 lg:gap-4 text-center lg:text-left relative'>
