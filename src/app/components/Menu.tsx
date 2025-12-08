@@ -1,11 +1,10 @@
 "use client";
 
 import { useRef, useState, useEffect, useMemo } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
-import ParticleBackground from "./animations/ParticleBackground";
 
 gsap.registerPlugin(ScrollToPlugin);
 
@@ -15,12 +14,11 @@ interface MenuProps {
 }
 
 export default function Menu({ isOpen, onClose }: MenuProps) {
+  const router = useRouter();
   const overlayRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const particlesRef = useRef<HTMLDivElement>(null);
 
   const [mounted, setMounted] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(true);
   const [origin, setOrigin] = useState({ x: 50, y: 50 });
   const [activeSection, setActiveSection] = useState("#home");
 
@@ -40,18 +38,9 @@ export default function Menu({ isOpen, onClose }: MenuProps) {
     return () => cancelAnimationFrame(id);
   }, []);
 
-  // Track desktop vs mobile
-  useEffect(() => {
-    const handleResize = () => setIsDesktop(window.innerWidth >= 768);
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
   // Scroll lock
   useEffect(() => {
-    if (!mounted) return;
-    if (!isOpen) return;
+    if (!mounted || !isOpen) return;
 
     const scrollY = window.scrollY;
     document.body.style.position = "fixed";
@@ -65,7 +54,7 @@ export default function Menu({ isOpen, onClose }: MenuProps) {
     };
   }, [isOpen, mounted]);
 
-  // Track last click position
+  // Track click origin
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       setOrigin({
@@ -77,31 +66,36 @@ export default function Menu({ isOpen, onClose }: MenuProps) {
     return () => window.removeEventListener("click", handleClick);
   }, [isOpen]);
 
+  // Track if menu is open for scroll to action button
+  useEffect(() => {
+    if (!mounted) return;
+    if (isOpen) {
+      document.body.classList.add("menu-open");
+    } else {
+      document.body.classList.remove("menu-open");
+    }
+  }, [isOpen, mounted]);
+
+  // ScrollSpy for active section
   useEffect(() => {
     const handleScroll = () => {
       const sections = menuLinks.map((l) =>
         document.getElementById(l.href.slice(1))
       );
-      if (!sections.length) return;
-
-      // Pick the section closest to top (but still visible)
-      let current = "#home"; // fallback
       const offset = window.innerHeight / 3;
+      let current = "#home";
 
       sections.forEach((sec, i) => {
         if (!sec) return;
         const rect = sec.getBoundingClientRect();
-        if (rect.top - offset <= 0) {
-          current = menuLinks[i].href;
-        }
+        if (rect.top - offset <= 0) current = menuLinks[i].href;
       });
 
       setActiveSection(current);
     };
 
-    window.addEventListener("scroll", handleScroll);
-    handleScroll(); // initial check
-
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, [menuLinks]);
 
@@ -110,20 +104,17 @@ export default function Menu({ isOpen, onClose }: MenuProps) {
     () => {
       const overlay = overlayRef.current;
       const content = contentRef.current;
-      const particles = particlesRef.current;
       if (!overlay || !content) return;
 
       const tl = gsap.timeline({ paused: true });
 
       if (isOpen) {
-        // Open menu
         gsap.set(overlay, {
           display: "flex",
           clipPath: `circle(0% at ${origin.x}% ${origin.y}%)`,
           opacity: 1,
         });
         gsap.set(content, { opacity: 0, y: 50 });
-        if (particles) gsap.set(particles, { opacity: 0 });
 
         tl.to(overlay, {
           clipPath: `circle(150% at ${origin.x}% ${origin.y}%)`,
@@ -135,79 +126,52 @@ export default function Menu({ isOpen, onClose }: MenuProps) {
           "-=0.6"
         );
 
-        if (particles) {
-          tl.to(
-            particles,
-            { opacity: 1, duration: 0.6, ease: "power2.out" },
-            "-=0.8"
-          );
-        }
-
         const links = content.querySelectorAll(".menu-link");
-        if (isDesktop) {
-          tl.fromTo(
-            links,
-            { opacity: 0, y: 30 },
-            {
-              opacity: 1,
-              y: 0,
-              stagger: 0.08,
-              duration: 0.5,
-              ease: "power3.out",
-            },
-            "-=0.4"
-          );
-        } else {
-          tl.to(links, { opacity: 1, y: 0, duration: 0.2 }, "-=0.2");
-        }
+        tl.fromTo(
+          links,
+          { opacity: 0, y: 30 },
+          {
+            opacity: 1,
+            y: 0,
+            stagger: 0.08,
+            duration: 0.5,
+            ease: "power3.out",
+          },
+          "-=0.4"
+        );
 
         tl.play();
       } else {
-        // Close menu
-        const closeTl = gsap.timeline({
+        gsap.to(content, {
+          opacity: 0,
+          y: 30,
+          duration: 0.3,
+          ease: "power3.in",
+        });
+        gsap.to(overlay, {
+          clipPath: `circle(0% at ${origin.x}% ${origin.y}%)`,
+          duration: 0.6,
+          ease: "power2.in",
           onComplete: () => {
-            // Hide overlay only after animation finishes
             gsap.set(overlay, { display: "none" });
           },
         });
-        closeTl
-          .to(content, { opacity: 0, y: 30, duration: 0.3, ease: "power3.in" })
-          .to(
-            overlay,
-            {
-              clipPath: `circle(0% at ${origin.x}% ${origin.y}%)`,
-              duration: 0.6,
-              ease: "power2.in",
-            },
-            "-=0.2"
-          );
-        if (particles) {
-          closeTl.to(particles, { opacity: 0, duration: 0.4 }, "-=0.6");
-        }
-        closeTl.play();
       }
     },
-    { scope: overlayRef, dependencies: [isOpen, origin, isDesktop, mounted] }
+    { scope: overlayRef, dependencies: [isOpen, origin, mounted] }
   );
 
-  // Hide overlay initially to prevent flash
   if (!mounted) return <div style={{ display: "none" }} />;
 
   return (
     <div
       ref={overlayRef}
       className='fixed inset-0 z-60 flex justify-center items-center overflow-hidden bg-[#0f1930]'>
-      {isDesktop && (
-        <div ref={particlesRef}>
-          <ParticleBackground />
-        </div>
-      )}
-
       <div
         ref={contentRef}
         className='relative z-10 flex flex-col gap-10 px-12 py-8 items-center text-center'>
         {menuLinks.map((link) => (
-          <Link
+          <a
             key={link.name}
             href={link.href}
             className={
@@ -225,10 +189,13 @@ export default function Menu({ isOpen, onClose }: MenuProps) {
                 ease: "power2.out",
               });
 
+              // Update URL hash without reloading
+              router.replace(link.href);
+
               onClose();
             }}>
             {link.name}
-          </Link>
+          </a>
         ))}
       </div>
     </div>

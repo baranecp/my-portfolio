@@ -90,7 +90,7 @@ const Hero = forwardRef<HTMLDivElement>((_props, ref) => {
       {/* Scroll Indicator */}
       <div
         aria-hidden='true'
-        className='fixed bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-1'>
+        className='scroll-indicator fixed bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-1'>
         <div
           ref={textRef}
           className='text-accent font-mono text-sm select-none'>

@@ -27,11 +27,6 @@ html {
   scrollbar-width: none;
 }
 
-/* Hide scrollbar for IE and Edge */
-body {
-  -ms-overflow-style: none;
-}
-
 /* Hide scrollbar for Chrome, Safari, and Opera */
 body::-webkit-scrollbar {
   display: none;
@@ -44,10 +39,15 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -ms-overflow-style: none;
 }
 
 [data-animate] {
   will-change: transform, opacity;
+}
+
+body.menu-open .scroll-indicator {
+  display: none !important;
 }
 
 section {
