@@ -73,8 +73,8 @@ const Hero = forwardRef<HTMLDivElement>((_props, ref) => {
         <p
           data-animate
           className='max-w-xl text-muted mx-auto lg:mx-0 mt-4 text-lg'>
-          I’m a software engineer specializing in building exceptional digital
-          experiences.
+          Self-taught developer continuously improving and building clean,
+          modern web experiences.
         </p>
 
         <a
