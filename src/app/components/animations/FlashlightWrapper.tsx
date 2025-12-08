@@ -1,10 +1,9 @@
 "use client";
 
-import { useRef, ReactNode, useState } from "react";
+import { useRef, ReactNode, useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "@studio-freight/lenis";
-import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -17,84 +16,70 @@ export default function FlashlightWrapper({
   children,
   radius = 600,
 }: FlashlightWrapperProps) {
-  const spotlightRef = useRef<HTMLDivElement | null>(null);
-  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const spotlightRef = useRef<HTMLDivElement>(null);
 
-  const [showSpotlight, setShowSpotlight] = useState(false);
+  useEffect(() => {
+    if (window.innerWidth < 1024 || !spotlightRef.current) return;
 
-  // Detect desktop
-  useGSAP(() => {
-    const update = () => setShowSpotlight(window.innerWidth >= 1024);
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, []);
-
-  // Lenis smooth scroll + ScrollTrigger sync
-  useGSAP(() => {
-    if (!showSpotlight) return;
-
-    const lenis = new Lenis({
-      duration: 1,
-      easing: (t: number) => t,
-      smoothWheel: true,
-    });
-
-    let rafId: number;
-    let ticking = false;
-
-    const raf = (time: number) => {
-      lenis.raf(time);
-
-      if (!ticking) {
-        ticking = true;
-        requestAnimationFrame(() => {
-          ScrollTrigger.update();
-          ticking = false;
-        });
-      }
-
-      rafId = requestAnimationFrame(raf);
-    };
-
-    rafId = requestAnimationFrame(raf);
-
-    return () => {
-      lenis.destroy();
-      cancelAnimationFrame(rafId);
-    };
-  }, [showSpotlight]);
-
-  // Spotlight mouse movement
-  useGSAP(() => {
-    if (!showSpotlight) return;
     const el = spotlightRef.current;
-    if (!el) return;
 
     gsap.set(el, { x: -9999, y: -9999, autoAlpha: 1 });
 
-    const move = (e: MouseEvent) => {
-      gsap.to(el, {
-        x: e.clientX,
-        y: e.clientY,
-        duration: 0.35,
-        ease: "power3.out",
-      });
-    };
+    const setX = gsap.quickSetter(el, "x", "px");
+    const setY = gsap.quickSetter(el, "y", "px");
 
-    window.addEventListener("mousemove", move);
-    return () => window.removeEventListener("mousemove", move);
-  }, [showSpotlight]);
+    const onMouseMove = (e: MouseEvent) => {
+      setX(e.clientX);
+      setY(e.clientY);
+    };
+    window.addEventListener("mousemove", onMouseMove);
+
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t: number) => t,
+      wheelMultiplier: 1,
+    });
+
+    const raf = (time: number) => {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    };
+    requestAnimationFrame(raf);
+
+    ScrollTrigger.scrollerProxy(document.body, {
+      scrollTop(value?: number) {
+        if (value !== undefined) lenis.scrollTo(value);
+        return lenis.scroll.instance?.scroll || 0;
+      },
+      getBoundingClientRect() {
+        return {
+          top: 0,
+          left: 0,
+          width: window.innerWidth,
+          height: window.innerHeight,
+        };
+      },
+      pinType: "transform",
+    });
+
+    ScrollTrigger.addEventListener("refresh", () => ScrollTrigger.update());
+    ScrollTrigger.refresh();
+
+    return () => {
+      window.removeEventListener("mousemove", onMouseMove);
+      lenis.destroy();
+      ScrollTrigger.getAll().forEach((st) => st.kill());
+    };
+  }, [radius]);
 
   return (
     <div ref={wrapperRef} className='relative'>
-      {showSpotlight && (
-        <div
-          ref={spotlightRef}
-          className='spotlight z-50 pointer-events-none'
-          style={{ width: radius, height: radius }}
-        />
-      )}
+      <div
+        ref={spotlightRef}
+        className='spotlight z-50 pointer-events-none'
+        style={{ width: radius, height: radius }}
+      />
       {children}
     </div>
   );
