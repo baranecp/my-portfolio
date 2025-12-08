@@ -1,10 +1,13 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import ParticleBackground from "./animations/ParticleBackground";
+
+gsap.registerPlugin(ScrollToPlugin);
 
 interface MenuProps {
   isOpen: boolean;
@@ -19,13 +22,17 @@ export default function Menu({ isOpen, onClose }: MenuProps) {
   const [mounted, setMounted] = useState(false);
   const [isDesktop, setIsDesktop] = useState(true);
   const [origin, setOrigin] = useState({ x: 50, y: 50 });
+  const [activeSection, setActiveSection] = useState("#home");
 
-  const menuLinks = [
-    { name: "Home", href: "#home" },
-    { name: "About", href: "#about" },
-    { name: "Projects", href: "#projects" },
-    { name: "Contact", href: "#contact" },
-  ];
+  const menuLinks = useMemo(
+    () => [
+      { name: "Home", href: "#home" },
+      { name: "About", href: "#about" },
+      { name: "Projects", href: "#projects" },
+      { name: "Contact", href: "#contact" },
+    ],
+    []
+  );
 
   // Hydration-safe mount
   useEffect(() => {
@@ -69,6 +76,34 @@ export default function Menu({ isOpen, onClose }: MenuProps) {
     if (isOpen) window.addEventListener("click", handleClick, { once: true });
     return () => window.removeEventListener("click", handleClick);
   }, [isOpen]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = menuLinks.map((l) =>
+        document.getElementById(l.href.slice(1))
+      );
+      if (!sections.length) return;
+
+      // Pick the section closest to top (but still visible)
+      let current = "#home"; // fallback
+      const offset = window.innerHeight / 3;
+
+      sections.forEach((sec, i) => {
+        if (!sec) return;
+        const rect = sec.getBoundingClientRect();
+        if (rect.top - offset <= 0) {
+          current = menuLinks[i].href;
+        }
+      });
+
+      setActiveSection(current);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    handleScroll(); // initial check
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [menuLinks]);
 
   // GSAP animations
   useGSAP(
@@ -175,8 +210,23 @@ export default function Menu({ isOpen, onClose }: MenuProps) {
           <Link
             key={link.name}
             href={link.href}
-            className='menu-link text-white text-5xl font-light px-6 py-2 rounded-md hover:bg-white/10 hover:text-green-400 transition-all duration-300'
-            onClick={onClose}>
+            className={
+              "menu-link text-5xl font-light px-6 py-2 rounded-md transition-all duration-300 " +
+              (activeSection === link.href
+                ? "text-green-400"
+                : "text-white hover:bg-white/10 hover:text-green-400")
+            }
+            onClick={(e) => {
+              e.preventDefault();
+
+              gsap.to(window, {
+                duration: 1,
+                scrollTo: link.href,
+                ease: "power2.out",
+              });
+
+              onClose();
+            }}>
             {link.name}
           </Link>
         ))}
