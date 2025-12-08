@@ -53,7 +53,7 @@ const Projects = forwardRef<HTMLDivElement>((_props, ref) => {
           className='w-full h-full rounded-xl overflow-hidden border border-[#233554]'>
           <Image
             priority
-            src='/finance-app-preview.svg'
+            src='/finance-app-preview.png'
             alt='Finance App Preview'
             width={800}
             height={400}
