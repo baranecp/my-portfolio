@@ -17,8 +17,6 @@ export default function Menu({ isOpen, onClose }: MenuProps) {
   const router = useRouter();
   const overlayRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-
-  const [mounted, setMounted] = useState(false);
   const [origin, setOrigin] = useState({ x: 50, y: 50 });
   const [activeSection, setActiveSection] = useState("#home");
 
@@ -32,29 +30,7 @@ export default function Menu({ isOpen, onClose }: MenuProps) {
     []
   );
 
-  // Hydration-safe mount
-  useEffect(() => {
-    const id = requestAnimationFrame(() => setMounted(true));
-    return () => cancelAnimationFrame(id);
-  }, []);
-
-  // Scroll lock
-  useEffect(() => {
-    if (!mounted || !isOpen) return;
-
-    const scrollY = window.scrollY;
-    document.body.style.position = "fixed";
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.width = "100%";
-
-    return () => {
-      document.body.style.position = "";
-      document.body.style.top = "";
-      window.scrollTo(0, scrollY);
-    };
-  }, [isOpen, mounted]);
-
-  // Track click origin
+  // Track click origin for animation
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       setOrigin({
@@ -65,16 +41,6 @@ export default function Menu({ isOpen, onClose }: MenuProps) {
     if (isOpen) window.addEventListener("click", handleClick, { once: true });
     return () => window.removeEventListener("click", handleClick);
   }, [isOpen]);
-
-  // Track if menu is open for scroll to action button
-  useEffect(() => {
-    if (!mounted) return;
-    if (isOpen) {
-      document.body.classList.add("menu-open");
-    } else {
-      document.body.classList.remove("menu-open");
-    }
-  }, [isOpen, mounted]);
 
   // ScrollSpy for active section
   useEffect(() => {
@@ -99,13 +65,14 @@ export default function Menu({ isOpen, onClose }: MenuProps) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [menuLinks]);
 
-  // GSAP animations
+  // GSAP animations for menu open/close
   useGSAP(
     () => {
       const overlay = overlayRef.current;
       const content = contentRef.current;
       if (!overlay || !content) return;
 
+      const links = content.querySelectorAll(".menu-link");
       const tl = gsap.timeline({ paused: true });
 
       if (isOpen) {
@@ -114,54 +81,51 @@ export default function Menu({ isOpen, onClose }: MenuProps) {
           clipPath: `circle(0% at ${origin.x}% ${origin.y}%)`,
           opacity: 1,
         });
-        gsap.set(content, { opacity: 0, y: 50 });
+        gsap.set(content, { opacity: 0 });
 
         tl.to(overlay, {
           clipPath: `circle(150% at ${origin.x}% ${origin.y}%)`,
           duration: 0.8,
           ease: "power2.out",
-        }).to(
-          content,
-          { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
-          "-=0.6"
-        );
-
-        const links = content.querySelectorAll(".menu-link");
-        tl.fromTo(
-          links,
-          { opacity: 0, y: 30 },
-          {
-            opacity: 1,
-            y: 0,
-            stagger: 0.08,
-            duration: 0.5,
-            ease: "power3.out",
-          },
-          "-=0.4"
-        );
+        })
+          .to(content, { opacity: 1, duration: 0.6 }, "-=0.6")
+          .fromTo(
+            links,
+            { opacity: 0, y: 50, scale: 0.95 },
+            {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              stagger: 0.1,
+              duration: 0.5,
+              ease: "power3.out",
+            },
+            "-=0.4"
+          );
 
         tl.play();
       } else {
-        gsap.to(content, {
-          opacity: 0,
-          y: 30,
-          duration: 0.3,
-          ease: "power3.in",
-        });
-        gsap.to(overlay, {
-          clipPath: `circle(0% at ${origin.x}% ${origin.y}%)`,
-          duration: 0.6,
-          ease: "power2.in",
+        const closeTl = gsap.timeline({
           onComplete: () => {
             gsap.set(overlay, { display: "none" });
           },
         });
+        closeTl
+          .to(links, { opacity: 0, y: 30, scale: 0.95, duration: 0.3 }, 0)
+          .to(
+            overlay,
+            {
+              clipPath: `circle(0% at ${origin.x}% ${origin.y}%)`,
+              duration: 0.6,
+              ease: "power2.in",
+            },
+            "-=0.2"
+          )
+          .play();
       }
     },
-    { scope: overlayRef, dependencies: [isOpen, origin, mounted] }
+    { scope: overlayRef, dependencies: [isOpen, origin] }
   );
-
-  if (!mounted) return <div style={{ display: "none" }} />;
 
   return (
     <div
@@ -169,17 +133,16 @@ export default function Menu({ isOpen, onClose }: MenuProps) {
       className='fixed inset-0 z-60 flex justify-center items-center overflow-hidden bg-[#0f1930]'>
       <div
         ref={contentRef}
-        className='relative z-10 flex flex-col gap-10 px-12 py-8 items-center text-center'>
+        className='relative z-10 flex flex-col gap-12 px-12 py-8 items-center text-center'>
         {menuLinks.map((link) => (
           <a
             key={link.name}
             href={link.href}
-            className={
-              "menu-link text-5xl font-light px-6 py-2 rounded-md transition-all duration-300 " +
-              (activeSection === link.href
+            className={`menu-link group text-[4rem] font-extrabold px-6 py-4 transition-all duration-300 transform ${
+              activeSection === link.href
                 ? "text-green-400"
-                : "text-white hover:bg-white/10 hover:text-green-400")
-            }
+                : "text-white hover:text-green-400"
+            }`}
             onClick={(e) => {
               e.preventDefault();
 
@@ -189,12 +152,14 @@ export default function Menu({ isOpen, onClose }: MenuProps) {
                 ease: "power2.out",
               });
 
-              // Update URL hash without reloading
               router.replace(link.href);
 
               onClose();
             }}>
-            {link.name}
+            <span className='relative inline-block'>
+              {link.name}
+              <span className='absolute left-0 -bottom-2 w-0 h-1 bg-green-400 transition-all duration-300 group-hover:w-full'></span>
+            </span>
           </a>
         ))}
       </div>
