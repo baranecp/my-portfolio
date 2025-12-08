@@ -38,7 +38,7 @@ const Hero = forwardRef<HTMLDivElement>((_props, ref) => {
         scrollTrigger: {
           trigger: heroEl,
           start: "top top",
-          end: "bottom 50%",
+          end: "bottom 70%",
           scrub: true,
           invalidateOnRefresh: true,
         },
