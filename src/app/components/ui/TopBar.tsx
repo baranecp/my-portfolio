@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Logo from "../animations/Logo";
 import MorphingMenuIcon from "../animations/MorphingMenuIcon";
-import Menu from "../Menu";
+import Menu from "../menu/Menu";
 
 export default function TopBar() {
   const [isOpen, setIsOpen] = useState(false);
