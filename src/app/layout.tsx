@@ -4,6 +4,7 @@ import "./globals.css";
 import FlashlightWrapper from "./components/animations/FlashlightWrapper";
 import ParticleBackground from "./components/animations/ParticleBackground";
 import LoaderWrapper from "./components/LoaderWrapper";
+import SmoothScrolling from "./components/animations/SmoothScrolling";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -32,10 +33,12 @@ export default function RootLayout({
     <html lang='en'>
       <body
         className={`${inter.variable} ${firaCode.variable} antialiased scrollbar-hide`}>
-        <ParticleBackground />
-        <LoaderWrapper>
-          <FlashlightWrapper>{children}</FlashlightWrapper>
-        </LoaderWrapper>
+        <SmoothScrolling>
+          <LoaderWrapper>
+            <ParticleBackground />
+            <FlashlightWrapper>{children}</FlashlightWrapper>
+          </LoaderWrapper>
+        </SmoothScrolling>
       </body>
     </html>
   );
