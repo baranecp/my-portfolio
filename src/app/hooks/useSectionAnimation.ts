@@ -1,66 +1,55 @@
 "use client";
 import { RefObject } from "react";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 
-gsap.registerPlugin(ScrollTrigger);
-
-interface UseSectionAnimationOptions {
-  stagger?: number;
-  fromY?: number;
-  toY?: number;
-  autoAlphaStart?: number;
-  autoAlphaEnd?: number;
-}
-
 export function useSectionAnimation(
-  ref: RefObject<HTMLElement>,
-  options?: UseSectionAnimationOptions
+  containerRef: RefObject<HTMLElement | null>,
 ) {
-  const {
-    stagger = 0.15,
-    fromY = 40,
-    toY = 0,
-    autoAlphaStart = 0,
-    autoAlphaEnd = 1,
-  } = options || {};
+  useGSAP(
+    () => {
+      const elements = gsap.utils.toArray<HTMLElement>("[data-animate]");
+      if (!elements.length) return;
 
-  useGSAP(() => {
-    const container = ref.current;
-    if (!container) return;
+      elements.forEach((el) => {
+        // Create a single timeline that tracks the element's entire life on screen
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: el,
+            // Start: When the top of the element hits the bottom of the viewport
+            start: "top bottom",
+            // End: When the bottom of the element leaves the top of the viewport
+            end: "bottom top",
+            scrub: 1.2, // Smooth "catch-up" momentum
+            invalidateOnRefresh: true,
+          },
+        });
 
-    const elements = Array.from(
-      container.querySelectorAll<HTMLElement>("[data-animate]")
-    );
-    if (!elements.length) return;
-
-    elements.forEach((el) => (el.style.willChange = "opacity, transform"));
-
-    // Set initial state
-    gsap.set(elements, { autoAlpha: autoAlphaStart, y: fromY });
-
-    // Create individual ScrollTriggers with scrub for smooth scroll
-    const triggers = elements.map((el, i) =>
-      gsap.to(el, {
-        autoAlpha: autoAlphaEnd,
-        y: toY,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: el,
-          start: "top 90%",
-          end: "bottom 10%",
-          scrub: true,
-          invalidateOnRefresh: true,
-        },
-        duration: 1,
-        delay: i * stagger,
-      })
-    );
-
-    return () => {
-      triggers.forEach((t) => t.kill());
-      ScrollTrigger.getAll().forEach((st) => st.kill());
-    };
-  }, [ref, stagger, fromY, toY, autoAlphaStart, autoAlphaEnd]);
+        tl.fromTo(
+          el,
+          { autoAlpha: 0, y: 80, filter: "blur(10px)" }, // Start hidden below
+          {
+            autoAlpha: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 0.3, // Entrance phase
+            ease: "power2.out",
+          },
+        )
+          .to(el, {
+            // This is the "Stay" phase.
+            // We do nothing for a bit so it stays visible in the middle.
+            duration: 0.5,
+          })
+          .to(el, {
+            autoAlpha: 0,
+            y: -80, // Exit phase (Slide up and out)
+            filter: "blur(10px)",
+            duration: 0.3,
+            ease: "power2.in",
+          });
+      });
+    },
+    { scope: containerRef },
+  );
 }
