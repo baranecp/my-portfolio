@@ -15,7 +15,7 @@ export default function FlashlightWrapper({
   useGSAP(() => {
     const mm = gsap.matchMedia();
 
-    mm.add("(min-width: 1300px)", () => {
+    mm.add("(min-width: 1024px)", () => {
       const el = spotlightRef.current;
       if (!el) return;
 
