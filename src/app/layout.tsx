@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter, Fira_Code } from "next/font/google";
 import "./globals.css";
 import FlashlightWrapper from "./components/animations/FlashlightWrapper";
-import ParticleBackground from "./components/animations/ParticleBackground";
 import LoaderWrapper from "./components/LoaderWrapper";
 import SmoothScrolling from "./components/animations/SmoothScrolling";
 
