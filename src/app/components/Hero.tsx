@@ -66,7 +66,7 @@ const Hero = forwardRef<HTMLDivElement>((_props, externalRef) => {
     <section
       id='home'
       ref={internalRef}
-      className='relative flex flex-col justify-center min-h-screen px-6 md:px-12 lg:px-24'>
+      className='relative flex flex-col justify-center mx-auto px-6 py-32 min-h-screen max-w-7xl'>
       <div className='max-w-5xl z-10'>
         <p
           data-animate

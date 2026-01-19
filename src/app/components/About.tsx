@@ -17,7 +17,7 @@ const About = forwardRef<HTMLDivElement>((_props, externalRef) => {
       id='about'
       ref={internalRef}
       aria-labelledby='about-heading'
-      className='flex flex-col justify-center min-h-screen px-6 py-32'>
+      className='flex flex-col justify-center mx-auto px-6 py-32 min-h-screen max-w-7xl'>
       <div className='flex items-center gap-4 mb-16'>
         <h2
           id='about-heading'
