@@ -35,7 +35,6 @@ export default function RootLayout({
         className={`${inter.variable} ${firaCode.variable} antialiased scrollbar-hide`}>
         <SmoothScrolling>
           <LoaderWrapper>
-            <ParticleBackground />
             <FlashlightWrapper>{children}</FlashlightWrapper>
           </LoaderWrapper>
         </SmoothScrolling>
