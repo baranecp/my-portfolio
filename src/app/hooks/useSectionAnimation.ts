@@ -5,50 +5,76 @@ import { useGSAP } from "@gsap/react";
 
 export function useSectionAnimation(
   containerRef: RefObject<HTMLElement | null>,
+  animateOut: boolean = true,
 ) {
   useGSAP(
     () => {
-      const elements = gsap.utils.toArray<HTMLElement>("[data-animate]");
-      if (!elements.length) return;
+      if (!containerRef.current) return;
+      const mm = gsap.matchMedia();
 
-      elements.forEach((el) => {
-        // Create a single timeline that tracks the element's entire life on screen
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: el,
-            // Start: When the top of the element hits the bottom of the viewport
-            start: "top bottom",
-            // End: When the bottom of the element leaves the top of the viewport
-            end: "bottom top",
-            scrub: 1.2, // Smooth "catch-up" momentum
-            invalidateOnRefresh: true,
-          },
-        });
+      mm.add("(min-width: 1300px)", () => {
+        const elements = gsap.utils.toArray<HTMLElement>("[data-animate]");
+        if (!elements.length) return;
 
-        tl.fromTo(
-          el,
-          { autoAlpha: 0, y: 80, filter: "blur(10px)" }, // Start hidden below
-          {
-            autoAlpha: 1,
-            y: 0,
-            filter: "blur(0px)",
-            duration: 0.3, // Entrance phase
-            ease: "power2.out",
-          },
-        )
-          .to(el, {
-            // This is the "Stay" phase.
-            // We do nothing for a bit so it stays visible in the middle.
-            duration: 0.5,
-          })
-          .to(el, {
-            autoAlpha: 0,
-            y: -80, // Exit phase (Slide up and out)
-            filter: "blur(10px)",
-            duration: 0.3,
-            ease: "power2.in",
+        elements.forEach((el) => {
+          gsap.set(el, {
+            transformOrigin: "center center",
+            force3D: true,
+            backfaceVisibility: "hidden",
           });
+
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: el,
+              start: "top 90%", // Starts entering when it hits bottom of screen
+              // FIX 1: Changed from 'bottom 35%' to 'bottom top'
+              // This ensures the element is NOT faded out when you jump to it via menu
+              end: animateOut ? "bottom top" : "bottom bottom",
+              scrub: 1.8,
+              invalidateOnRefresh: true,
+            },
+          });
+
+          // ENTRANCE (Exact same animation)
+          tl.fromTo(
+            el,
+            {
+              autoAlpha: 0,
+              y: 100,
+              rotateX: 15,
+              scale: 0.9,
+              filter: "blur(6px)",
+            },
+            {
+              autoAlpha: 1,
+              y: 0,
+              rotateX: 0,
+              scale: 1,
+              filter: "blur(0px)",
+              duration: 0.6,
+              ease: "power2.out",
+            },
+          )
+            // FIX 2: Increased duration of the "Stay Visible" phase to 3
+            // This forces the "Exit" to wait until the very last moment
+            .to(el, { duration: 0.6 });
+
+          // EXIT (Exact same animation, just happens later)
+          if (animateOut) {
+            tl.to(el, {
+              autoAlpha: 0,
+              y: -100,
+              rotateX: -15,
+              scale: 0.9,
+              filter: "blur(6px)",
+              duration: 0.6,
+              ease: "power2.in",
+            });
+          }
+        });
       });
+
+      return () => mm.revert();
     },
     { scope: containerRef },
   );

@@ -9,7 +9,7 @@ export function useHeroAnimation(containerRef: RefObject<HTMLElement | null>) {
       if (!containerRef.current) return;
       const mm = gsap.matchMedia();
 
-      mm.add("(min-width: 1440px)", () => {
+      mm.add("(min-width: 1300px)", () => {
         const elements = gsap.utils.toArray<HTMLElement>("[data-animate]");
         if (!elements.length) return;
 
