@@ -1,53 +1,62 @@
 "use client";
-
-import { forwardRef } from "react";
+import { forwardRef, useImperativeHandle, useRef } from "react";
 import { useSectionAnimation } from "../hooks/useSectionAnimation";
+import Magnetic from "./animations/Magnetic";
 
-const Contact = forwardRef<HTMLDivElement>((_props, ref) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  useSectionAnimation(ref as any);
+const Contact = forwardRef<HTMLDivElement>((_props, externalRef) => {
+  // 1. Create an internal ref we control
+  const internalRef = useRef<HTMLDivElement>(null);
+
+  // 2. Sync it with the external ref safely
+  useImperativeHandle(externalRef, () => internalRef.current as HTMLDivElement);
+
+  // 3. Pass our strictly typed internal ref to the hook
+  useSectionAnimation(internalRef);
 
   return (
     <section
-      ref={ref}
+      ref={internalRef}
       id='contact'
       aria-labelledby='contact-heading'
-      className='min-h-screen flex flex-col justify-center items-center px-8 text-center gap-6 relative'>
-      <div className='flex items-center gap-4 text-4xl mb-10'>
-        <h2 id='contact-heading' data-animate className='font-sans'>
-          <span className='text-accent'>#</span> What&apos;s Next
-        </h2>
-        <div data-animate className='h-px w-70 bg-[#8892b0]'></div>
+      className='min-h-screen flex flex-col items-center px-6 pt-32 relative'>
+      <div className='grow flex flex-col justify-center items-center w-full'>
+        <div className='flex flex-col items-center mb-10'>
+          <p data-animate className='text-accent font-mono text-base mb-4'>
+            03. What’s Next?
+          </p>
+          <h2
+            id='contact-heading'
+            data-animate
+            className='text-5xl md:text-6xl font-bold text-white text-center'>
+            Get In Touch
+          </h2>
+        </div>
+
+        <div className='max-w-2xl text-center space-y-8'>
+          <p
+            data-animate
+            className='text-[#8892b0] text-lg md:text-xl leading-relaxed'>
+            I’m currently looking for new opportunities as a frontend developer.
+            Whether you have a question, a project idea, or just want to say hi,
+            my inbox is always open.
+          </p>
+
+          <div data-animate className='pt-6'>
+            <Magnetic>
+              <a
+                href='mailto:baranec.dev@gmail.com'
+                className='inline-block border-2 border-accent text-accent px-12 py-5 rounded font-mono text-sm hover:bg-accent/10 transition-all duration-300'>
+                Say Hello
+              </a>
+            </Magnetic>
+          </div>
+        </div>
       </div>
-
-      {/* Intro text */}
-      <p data-animate className='max-w-xl text-muted text-lg mb-6'>
-        I’m currently looking for opportunities as a frontend developer —
-        whether it’s a full-time role, a part-time gig, or an internship. If you
-        have an interesting project or position, I’d love to hear from you! My
-        inbox is always open and I usually respond within 24 hours. Let’s build
-        something amazing together!
-      </p>
-
-      {/* Contact button */}
-      <a
-        data-animate
-        href='mailto:baranec.dev@gmail.com'
-        className='inline-block max-w-xs w-full border border-accent text-accent px-8 py-3 rounded font-mono hover:bg-accent/10 transition-all duration-300'>
-        Get in Touch
-      </a>
-
-      {/* Footer */}
-      <footer className='absolute bottom-4 w-full text-center lg:text-left px-8 lg:px-24  py-4 rounded-t-lg'>
-        <p className='text-sm text-muted opacity-80'>
-          Coded in{" "}
-          <span className='text-accent font-semibold'>Visual Studio Code</span>{" "}
-          by yours truly. Built with{" "}
-          <span className='text-accent font-semibold'>Next.js</span> and{" "}
-          <span className='text-accent font-semibold'>Tailwind CSS</span>,
-          animated with <span className='text-accent font-semibold'>GSAP</span>,
-          deployed with{" "}
-          <span className='text-accent font-semibold'>Vercel</span>.
+      <footer className='w-full py-10 flex flex-col items-center gap-4 text-center border-t border-slate/10 mt-20'>
+        <p className='text-xs font-mono text-slate/60 leading-loose max-w-lg'>
+          Designed & Built by <span className='text-accent'>Peter Baranec</span>
+          <br />
+          Built with Next.js • Tailwind CSS • GSAP 3D
         </p>
       </footer>
     </section>

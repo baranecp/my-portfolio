@@ -1,103 +1,120 @@
 "use client";
 
-import { forwardRef, useRef } from "react";
+import { forwardRef, useRef, useImperativeHandle } from "react";
 import { useHeroAnimation } from "../hooks/useHeroAnimation";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { RiScrollToBottomLine } from "react-icons/ri";
+import Magnetic from "./animations/Magnetic";
 
-gsap.registerPlugin(ScrollTrigger);
+const Hero = forwardRef<HTMLDivElement>((_props, externalRef) => {
+  // 1. Create an internal ref we control
+  const internalRef = useRef<HTMLDivElement>(null);
 
-const Hero = forwardRef<HTMLDivElement>((_props, ref) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  useHeroAnimation(ref as any);
+  // 2. Sync it with the external ref safely
+  useImperativeHandle(externalRef, () => internalRef.current as HTMLDivElement);
+
+  // 3. Pass our strictly typed internal ref to the hook
+  useHeroAnimation(internalRef);
 
   const arrowRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
 
-  useGSAP(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const heroEl = (ref as any).current;
-    if (!heroEl || !arrowRef.current || !textRef.current) return;
+  useGSAP(
+    () => {
+      const heroEl = internalRef.current;
+      if (!heroEl || !arrowRef.current || !textRef.current) return;
 
-    // Scoped GSAP context for automatic cleanup
-    const ctx = gsap.context(() => {
-      // Bounce animation
       gsap.to(arrowRef.current, {
-        y: 12,
-        duration: 0.8,
-        ease: "power1.inOut",
+        y: 10,
+        duration: 1.2,
+        ease: "sine.inOut",
         repeat: -1,
         yoyo: true,
       });
 
-      // Fade out on scroll
-      gsap.to([arrowRef.current, textRef.current], {
-        autoAlpha: 0,
-        scrollTrigger: {
-          trigger: heroEl,
-          start: "top top",
-          end: "bottom 70%",
-          scrub: true,
-          invalidateOnRefresh: true,
-        },
-      });
-    }, heroEl);
+      const mm = gsap.matchMedia();
 
-    return () => ctx.revert(); // cleanup context on unmount
-  }, [ref]);
+      mm.add("(min-width: 1024px)", () => {
+        gsap.to([arrowRef.current, textRef.current], {
+          autoAlpha: 0,
+          y: -20,
+          ease: "none",
+          scrollTrigger: {
+            trigger: heroEl,
+            start: "top top",
+            end: "20% top",
+            scrub: 1,
+            onLeave: () =>
+              gsap.set([arrowRef.current, textRef.current], {
+                display: "none",
+              }),
+            onEnterBack: () =>
+              gsap.set([arrowRef.current, textRef.current], {
+                display: "flex",
+              }),
+          },
+        });
+      });
+
+      return () => mm.revert();
+    },
+    { scope: internalRef },
+  );
 
   return (
     <section
       id='home'
-      ref={ref}
-      aria-labelledby='hero-heading'
-      className='hero flex flex-col justify-center min-h-screen px-8 gap-2 lg:gap-4 text-center lg:text-left relative'>
-      <div>
-        <p data-animate className='text-[#64ffda] font-mono text-lg'>
-          Hi, my name is
+      ref={internalRef}
+      className='relative flex flex-col justify-center min-h-screen px-6 md:px-12 lg:px-24'>
+      <div className='max-w-5xl z-10'>
+        <p
+          data-animate
+          className='text-accent font-mono text-base md:text-lg mb-4'>
+          <span className='opacity-50'>00.</span> Hi, my name is
         </p>
 
         <h1
+          id='hero-heading'
           data-animate
-          className='text-[clamp(3rem,8vw,6rem)] font-bold leading-tight'>
-          Peter Baranec.
+          className='text-[clamp(2.5rem,10vw,5.5rem)] font-bold leading-[1.1] text-white mb-2'>
+          Peter Baranec<span className='text-accent'>.</span>
         </h1>
 
         <h2
           data-animate
-          className='text-[clamp(2.25rem,6vw,4.5rem)] font-bold -mt-2'>
-          I build things for the web.
+          className='text-[clamp(2rem,7vw,4rem)] font-bold leading-[1.1] text-[#8892b0]'>
+          I build high-performance web interfaces.
         </h2>
 
         <p
           data-animate
-          className='max-w-xl text-muted mx-auto lg:mx-0 mt-4 text-lg'>
-          Self-taught developer continuously improving and building clean,
-          modern web experiences.
+          className='max-w-xl text-[#8892b0]/80 mt-8 text-lg md:text-xl leading-relaxed'>
+          I’m a self-taught developer specializing in crafting clean, responsive
+          experiences. Currently, I’m focused on building interactive and
+          motion-driven web applications.
         </p>
 
-        <a
-          data-animate
-          href='#contact'
-          aria-label='Scroll to contact section'
-          className='inline-block border border-accent text-accent px-8 py-3 rounded font-mono hover:bg-accent/10 transition-all duration-300 mt-6 focus:outline-2 focus:outline-accent'>
-          Get in touch!
-        </a>
+        <div data-animate className='mt-12 flex flex-wrap gap-4'>
+          <Magnetic>
+            <a
+              href='#projects'
+              className='px-10 py-4 border-2 border-accent text-accent rounded font-mono text-sm hover:bg-accent/10 transition-all duration-300'>
+              Check out my work!
+            </a>
+          </Magnetic>
+        </div>
       </div>
-
-      {/* Scroll Indicator */}
       <div
         aria-hidden='true'
-        className='scroll-indicator fixed bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-1'>
+        className='absolute bottom-10 left-1/2 -translate-x-1/2 flex-col items-center gap-2 hidden lg:flex pointer-events-none'>
         <div
           ref={textRef}
-          className='text-accent font-mono text-sm select-none'>
+          className='text-accent font-mono text-xs uppercase tracking-widest select-none'>
           Scroll
         </div>
         <div ref={arrowRef}>
-          <RiScrollToBottomLine className='text-accent w-6 h-6' />
+          <RiScrollToBottomLine className='text-accent w-7 h-7' />
         </div>
       </div>
     </section>

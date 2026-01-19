@@ -1,147 +1,198 @@
 "use client";
-import { forwardRef } from "react";
+import { forwardRef, useImperativeHandle, useRef } from "react";
 import { useSectionAnimation } from "../hooks/useSectionAnimation";
 import Image from "next/image";
-import { FiGithub, FiExternalLink } from "react-icons/fi";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { FiGithub, FiExternalLink, FiArrowUpRight } from "react-icons/fi";
+import Magnetic from "./animations/Magnetic";
 
-const smallProjects = [
-  {
-    title: "Todo",
-    description:
-      "A simple, modern Todo application built with vanilla JavaScript, Webpack, and localStorage for persistent data storage.",
-    github: "https://github.com/baranecp/Todo",
-  },
-  {
-    title: "Etch-a-Sketch",
-    description:
-      "Etch-a-Sketch style drawing application built using HTML, CSS, and JavaScript. Users can draw on a grid-based board, choose custom colors, enable rainbow mode, and use an eraser.",
-    github: "https://github.com/baranecp/etch-a-sketch",
-  },
-  {
-    title: "Memory Game",
-    description:
-      "MemoryCard is a lightweight browser game where players flip cards to find matching pairs. It's implemented with React and bundled with Vite.",
-    github: "https://github.com/baranecp/MemoryCard",
-  },
-];
+const Projects = forwardRef<HTMLDivElement>((_props, externalRef) => {
+  // 1. Create an internal ref we control
+  const internalRef = useRef<HTMLDivElement>(null);
 
-const Projects = forwardRef<HTMLDivElement>((_props, ref) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  useSectionAnimation(ref as any);
+  // 2. Sync it with the external ref safely
+  useImperativeHandle(externalRef, () => internalRef.current as HTMLDivElement);
+
+  // 3. Pass our strictly typed internal ref to the hook
+  useSectionAnimation(internalRef);
 
   return (
     <section
-      ref={ref}
+      ref={internalRef}
       id='projects'
-      aria-labelledby='projects-heading'
-      className='mx-auto px-6 py-24 min-h-screen'>
-      <div
-        data-animate
-        className='flex items-center gap-4 mb-12 text-4xl font-semibold'>
-        <h2>
-          <span className='text-accent'>#</span> Projects
+      className='mx-auto px-6 py-32 min-h-screen max-w-7xl'>
+      <div className='flex flex-col mb-16 space-y-2'>
+        <p
+          data-animate
+          className='text-accent font-mono text-sm tracking-widest uppercase'>
+          02. Selected Works
+        </p>
+        <h2 data-animate className='text-4xl md:text-6xl font-bold text-white'>
+          Projects
         </h2>
-        <div className='flex-1 h-px bg-[#8892b0]' />
       </div>
-      <div className='grid md:grid-cols-2 gap-10 mb-24 items-center'>
+
+      <div className='grid grid-cols-1 md:grid-cols-12 gap-6'>
         <div
           data-animate
-          className='w-full h-full rounded-xl overflow-hidden border border-[#233554] relative group'>
+          className='md:col-span-8 group relative rounded-3xl overflow-hidden bg-[#112240] border border-white/5 h-[500px]'>
+          <div className='absolute inset-0 z-10 bg-linear-to-t from-[#0a192f] via-transparent to-transparent opacity-80' />
           <Image
-            priority
             src='/finance-app-preview.png'
-            alt='Finance App Preview'
-            width={800}
-            height={400}
-            className='w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105'
-            // Recalculate ScrollTrigger once image loads to prevent layout shift bugs
-            onLoadingComplete={() => ScrollTrigger.refresh()}
+            alt='Finance Dashboard'
+            fill
+            className='object-cover grayscale-40 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000 ease-out'
           />
-        </div>
-        <div data-animate className='space-y-5'>
-          <h3 className='text-3xl font-bold text-white'>
-            Featured Project — Finance App
-          </h3>
-          <p className='text-[#a8b2d1] leading-relaxed'>
-            A full financial dashboard built with Next.js, TypeScript, Neon
-            PostgreSQL, Drizzle ORM, React Query, and Tailwind. Includes
-            filtering, sorting, pagination, recurring bills, theme switching,
-            and responsive UI.
-          </p>
-          <div className='flex flex-wrap gap-2'>
-            {[
-              "Next.js",
-              "TypeScript",
-              "Tailwind",
-              "PostgreSQL",
-              "Drizzle",
-              "React Query",
-            ].map((tech) => (
-              <span
-                key={tech}
-                className='px-3 py-1 text-sm rounded-lg bg-[#233554] text-[#a8b2d1]'>
-                {tech}
+
+          <div className='absolute bottom-0 left-0 p-8 z-20 w-full flex justify-between items-end'>
+            <div className='space-y-2'>
+              <span className='text-accent font-mono text-xs px-3 py-1 rounded-full bg-accent/10 border border-accent/20'>
+                Featured
               </span>
-            ))}
+              <h3 className='text-3xl font-bold text-white'>
+                Finance Dashboard
+              </h3>
+              <p className='text-slate max-w-md text-sm'>
+                A full-stack financial management tool with Drizzle ORM and
+                real-time analytics.
+              </p>
+            </div>
+            <div className='flex gap-4'>
+              <a
+                href='https://finance-app-beta-henna.vercel.app/'
+                target='_blank'
+                className='p-4 rounded-full bg-white text-black hover:bg-accent hover:text-white transition-colors'>
+                <FiArrowUpRight size={24} />
+              </a>
+            </div>
           </div>
-          <div className='flex gap-4 pt-2'>
-            <a
-              href='https://github.com/baranecp/finance-app'
-              target='_blank'
-              className='flex items-center gap-2 px-4 py-2 border border-accent text-accent rounded-lg hover:bg-accent hover:text-black transition-colors duration-300'>
-              <FiGithub /> GitHub
+        </div>
+
+        <div
+          data-animate
+          className='md:col-span-4 group relative rounded-3xl overflow-hidden bg-[#112240] border border-white/5 h-[500px]'>
+          <Image
+            src='/todo-preview.png' // Add your image to public folder
+            alt='Todo App'
+            fill
+            className='object-cover opacity-30 group-hover:opacity-60 transition-opacity duration-500'
+          />
+
+          <div className='absolute inset-0 z-10 bg-black/40 group-hover:bg-transparent transition-colors duration-500' />
+
+          <div className='p-8 relative z-20 h-full flex flex-col justify-between'>
+            <a href='https://github.com/baranecp/Todo' target='_blank'>
+              <FiGithub className='text-3xl text-slate group-hover:text-accent transition-colors' />
             </a>
-            <a
-              href='https://finance-app-beta-henna.vercel.app/'
-              target='_blank'
-              className='flex items-center gap-2 px-4 py-2 border border-accent text-accent rounded-lg hover:bg-accent hover:text-black transition-colors duration-300'>
-              <FiExternalLink /> Live Demo
-            </a>
+            <div>
+              <h4 className='text-xl font-bold text-white mb-2'>Modern Todo</h4>
+              <p className='text-slate text-sm mb-4'>
+                Vanilla JS architecture with persistent storage.
+              </p>
+              <div className='flex flex-wrap gap-2'>
+                <span className='text-[10px] font-mono text-slate/60'>JS</span>
+                <span className='text-[10px] font-mono text-slate/60'>
+                  Webpack
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          data-animate
+          className='md:col-span-4 group relative rounded-3xl overflow-hidden bg-[#112240] border border-white/5 h-[400px]'>
+          <a
+            href='https://github.com/baranecp/etch-a-sketch'
+            target='_blank'
+            className='block h-full w-full'>
+            <div className='p-8 h-full flex flex-col justify-center items-center text-center space-y-4'>
+              <div className='w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center text-accent group-hover:bg-accent group-hover:text-black transition-all'>
+                <FiFolder size={32} />
+              </div>
+              <h4 className='text-xl font-bold text-white'>Etch-a-Sketch</h4>
+              <p className='text-slate text-sm'>
+                Interactive drawing tool with RGB mode.
+              </p>
+            </div>
+          </a>
+        </div>
+
+        <div
+          data-animate
+          className='md:col-span-8 group relative rounded-3xl overflow-hidden bg-[#112240] border border-white/5 h-[400px]'>
+          <Image
+            src='/memory-preview.png' // Add your image to public folder
+            alt='Memory Game'
+            fill
+            className='object-cover opacity-20 group-hover:opacity-40 transition-opacity duration-500'
+          />
+
+          <div className='absolute inset-0 p-8 flex items-center justify-between z-20'>
+            <div className='max-w-xs'>
+              <h4 className='text-2xl font-bold text-white mb-4'>
+                Memory Challenge
+              </h4>
+              <p className='text-slate text-sm'>
+                A React logic game built to master state lifting and hook
+                management.
+              </p>
+              <div className='mt-6 flex gap-4 text-slate group-hover:text-white transition-all'>
+                <a
+                  href='https://github.com/baranecp/MemoryCard'
+                  target='_blank'
+                  className='hover:text-accent'>
+                  <FiGithub size={24} />
+                </a>
+                <FiExternalLink
+                  size={24}
+                  className='opacity-30 cursor-not-allowed'
+                />
+              </div>
+            </div>
+
+            <div className='relative w-64 h-full hidden lg:block translate-y-12 group-hover:translate-y-6 transition-transform duration-700'>
+              <div className='absolute inset-0 bg-accent/20 blur-3xl rounded-full' />
+              <div className='relative bg-[#1a2a47] border border-white/10 w-full h-full rounded-t-xl' />
+            </div>
           </div>
         </div>
       </div>
-      <h3 data-animate className='text-3xl font-bold mb-10'>
-        Smaller Projects
-      </h3>
-      <div className='grid md:grid-cols-3 gap-8'>
-        {smallProjects.map((project, i) => (
-          <article
-            key={i}
+
+      <div className='flex flex-col items-center justify-center mt-24 space-y-6'>
+        <h4 data-animate className='text-white font-bold text-xl'>
+          Want to see more?
+        </h4>
+        <Magnetic>
+          <a
             data-animate
-            aria-labelledby={`project-title-${i}`}
-            tabIndex={0}
-            onClick={() => window.open(project.github, "_blank")}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") window.open(project.github, "_blank");
-            }}
-            className='p-6 rounded-xl border border-[#233554] hover:border-accent hover:bg-[#1a2a47] transition cursor-pointer h-full flex flex-col'>
-            <header className='flex justify-between items-start mb-4'>
-              <h4 id={`project-title-${i}`} className='text-xl font-semibold'>
-                {project.title}
-              </h4>
-              <FiGithub className='text-xl text-accent' />
-            </header>
-            <p className='text-[#a8b2d1] leading-relaxed mb-6 grow'>
-              {project.description}
-            </p>
-          </article>
-        ))}
-      </div>
-      <div className='flex justify-center mt-6'>
-        <a
-          data-animate
-          target='_blank'
-          rel='noopener noreferrer'
-          href='https://github.com/baranecp?tab=repositories'
-          aria-label='View all projects on GitHub'
-          className='inline-block mx-auto border border-accent text-accent px-8 py-3 rounded font-mono hover:bg-accent/10 transition-all duration-300 mt-6 focus:outline-2 focus:outline-accent'>
-          See All Projects
-        </a>
+            href='https://github.com/baranecp?tab=repositories'
+            target='_blank'
+            className='group flex items-center gap-3 border-2 border-accent text-accent px-12 py-5 rounded-full font-mono text-sm hover:bg-accent/10 transition-all duration-300'>
+            Check All Repositories{" "}
+            <FiGithub
+              className='group-hover:rotate-12 transition-transform'
+              size={18}
+            />
+          </a>
+        </Magnetic>
       </div>
     </section>
   );
 });
+
+const FiFolder = ({ size }: { size: number }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox='0 0 24 24'
+    fill='none'
+    stroke='currentColor'
+    strokeWidth='2'
+    strokeLinecap='round'
+    strokeLinejoin='round'>
+    <path d='M4 19V5a2 2 0 0 1 2-2h4l2 2h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z'></path>
+  </svg>
+);
 
 Projects.displayName = "Projects";
 export default Projects;

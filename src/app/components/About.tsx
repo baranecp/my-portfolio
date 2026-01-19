@@ -1,57 +1,107 @@
 "use client";
-import { forwardRef } from "react";
+import { forwardRef, useImperativeHandle, useRef } from "react";
 import { useSectionAnimation } from "../hooks/useSectionAnimation";
 
-const About = forwardRef<HTMLDivElement>((props, ref) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  useSectionAnimation(ref as any);
+const About = forwardRef<HTMLDivElement>((_props, externalRef) => {
+  // 1. Create an internal ref we control
+  const internalRef = useRef<HTMLDivElement>(null);
+
+  // 2. Sync it with the external ref safely
+  useImperativeHandle(externalRef, () => internalRef.current as HTMLDivElement);
+
+  // 3. Pass our strictly typed internal ref to the hook
+  useSectionAnimation(internalRef);
+
   return (
     <section
       id='about'
-      ref={ref}
+      ref={internalRef}
       aria-labelledby='about-heading'
-      className='about flex flex-col lg:flex-row items-center justify-center min-h-screen px-8 py-32 gap-16'>
-      <div className='flex flex-col max-w-4xl text-xl lg:text-2xl leading-loose space-y-10'>
-        <div className='flex items-center gap-4 text-4xl mb-10'>
-          <h2 id='about-heading' data-animate className='font-sans'>
-            <span className='text-accent'>#</span> About Me
-          </h2>
-          <div data-animate className='h-px w-70 bg-[#8892b0]'></div>
+      className='flex flex-col justify-center min-h-screen px-6 py-32'>
+      <div className='flex items-center gap-4 mb-16'>
+        <h2
+          id='about-heading'
+          data-animate
+          className='text-4xl md:text-5xl font-bold whitespace-nowrap'>
+          <span className='text-accent font-mono'>01.</span> About Me
+        </h2>
+        <div data-animate className='h-px w-full max-w-md bg-slate/20'></div>
+      </div>
+
+      <div className='grid lg:grid-cols-[1.5fr_1fr] gap-16 items-start'>
+        <div className='space-y-8 text-[#8892b0] text-lg md:text-xl leading-relaxed'>
+          <p data-animate>
+            Hi! I’m <span className='text-white font-semibold'>Peter</span>, a
+            developer who enjoys bridging the gap between engineering and
+            design. My journey into tech started with
+            <span className='text-accent'> Electrical Engineering</span> and a
+            background as a communications specialist in the army.
+          </p>
+
+          <p data-animate>
+            Transitioning into software development allowed me to channel my
+            technical discipline into a creative outlet. Today, I focus on
+            building
+            <span className='text-accent'>
+              {" "}
+              high-performance interfaces
+            </span>{" "}
+            that feel fluid and alive.
+          </p>
+
+          <div
+            data-animate
+            className='p-6 rounded-xl border border-accent/10 bg-accent/5 backdrop-blur-sm'>
+            <p className='italic text-accent/90'>
+              I’m a dynamic and curious person who loves learning new things and
+              improving every day. I adapt quickly and take every challenge
+              head-on.
+            </p>
+          </div>
+
+          <div data-animate className='space-y-4 pt-4'>
+            <h3 className='text-white font-bold text-2xl'>Technical Toolkit</h3>
+            <ul className='grid grid-cols-2 gap-2 font-mono text-sm text-accent'>
+              <li className='flex items-center gap-2'>▹ React (Next.js)</li>
+              <li className='flex items-center gap-2'>▹ TypeScript</li>
+              <li className='flex items-center gap-2'>▹ GSAP & Framer</li>
+              <li className='flex items-center gap-2'>▹ Tailwind CSS</li>
+              <li className='flex items-center gap-2'>▹ PostgreSQL</li>
+              <li className='flex items-center gap-2'>▹ Drizzle</li>
+            </ul>
+          </div>
         </div>
+        <div className='flex flex-col gap-6'>
+          <div
+            data-animate
+            className='group relative p-8 rounded-2xl border border-slate/20 bg-lightNavy/50 hover:border-accent/50 transition-colors'>
+            <div className='absolute top-4 right-4 text-slate/20 group-hover:text-accent/20 transition-colors'>
+              <span className='text-6xl font-bold'>01</span>
+            </div>
+            <h4 className='text-white text-xl font-bold mb-2 uppercase tracking-widest'>
+              The Background
+            </h4>
+            <p className='text-slate text-base'>
+              Electronics technician & Army Communications Specialist.
+              Discipline turned into code.
+            </p>
+          </div>
 
-        <p data-animate>
-          Hi! I’m Peter, a self-taught frontend developer passionate about
-          crafting clean, responsive, and visually engaging web experiences. I
-          work mainly with <span className='text-accent'>React</span>,
-          <span className='text-accent'> Next.js</span>, and
-          <span className='text-accent'> Tailwind</span> CSS, and I’m currently
-          diving deep into animations with
-          <span className='text-accent'> GSAP</span>.
-        </p>
-
-        <p data-animate>
-          My path to coding wasn’t typical — I studied
-          <span className='text-accent'> electrical engineering</span>, worked
-          as an electronics technician and later served in the army as a
-          communication specialist. After leaving the army for health reasons, I
-          decided to give programming a real chance — and it quickly became my
-          passion.
-        </p>
-
-        <p data-animate>
-          I’m a <span className='text-accent'>dynamic and curious person</span>{" "}
-          who loves learning new things and improving every day. I adapt quickly
-          and take every challenge head-on.
-        </p>
-
-        <p data-animate>
-          When I’m not coding, you’ll find me{" "}
-          <span className='text-accent'>
-            training at the gym, playing games
-          </span>{" "}
-          or <span className='text-accent'>watching anime</span> — things that
-          keep me inspired and balanced.
-        </p>
+          <div
+            data-animate
+            className='group relative p-8 rounded-2xl border border-slate/20 bg-lightNavy/50 hover:border-accent/50 transition-colors'>
+            <div className='absolute top-4 right-4 text-slate/20 group-hover:text-accent/20 transition-colors'>
+              <span className='text-6xl font-bold'>02</span>
+            </div>
+            <h4 className='text-white text-xl font-bold mb-2 uppercase tracking-widest'>
+              Interests
+            </h4>
+            <p className='text-slate text-base'>
+              Gym, Gaming, and Anime. Always searching for inspiration in
+              different mediums.
+            </p>
+          </div>
+        </div>
       </div>
     </section>
   );
