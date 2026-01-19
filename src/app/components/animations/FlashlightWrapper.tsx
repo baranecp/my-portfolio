@@ -1,56 +1,52 @@
 "use client";
-
-import { useRef, useEffect, ReactNode } from "react";
+import { useRef, ReactNode } from "react";
 import gsap from "gsap";
-
-interface FlashlightWrapperProps {
-  children: ReactNode;
-  radius?: number;
-}
+import { useGSAP } from "@gsap/react";
 
 export default function FlashlightWrapper({
   children,
   radius = 600,
-}: FlashlightWrapperProps) {
-  // We removed wrapperRef as it wasn't being used for logic
+}: {
+  children: ReactNode;
+  radius?: number;
+}) {
   const spotlightRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    // Only run on desktop (width check + reference check)
-    if (window.innerWidth < 1024 || !spotlightRef.current) return;
+  useGSAP(() => {
+    const mm = gsap.matchMedia();
 
-    const el = spotlightRef.current;
+    mm.add("(min-width: 1024px)", () => {
+      const el = spotlightRef.current;
+      if (!el) return;
 
-    // 1. Initial Setup: Hide offscreen and center anchor point (-50%)
-    gsap.set(el, {
-      x: -9999,
-      y: -9999,
-      xPercent: -50,
-      yPercent: -50,
-      autoAlpha: 1,
+      const setX = gsap.quickSetter(el, "x", "px");
+      const setY = gsap.quickSetter(el, "y", "px");
+
+      let rafId: number;
+      const onMouseMove = (e: MouseEvent) => {
+        // Prevent event flooding
+        cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => {
+          setX(e.clientX);
+          setY(e.clientY);
+        });
+      };
+
+      window.addEventListener("mousemove", onMouseMove, { passive: true });
+      return () => {
+        window.removeEventListener("mousemove", onMouseMove);
+        cancelAnimationFrame(rafId);
+      };
     });
 
-    // 2. High Performance Setters (Bypasses normal animation queue)
-    const setX = gsap.quickSetter(el, "x", "px");
-    const setY = gsap.quickSetter(el, "y", "px");
-
-    const onMouseMove = (e: MouseEvent) => {
-      setX(e.clientX);
-      setY(e.clientY);
-    };
-
-    window.addEventListener("mousemove", onMouseMove);
-
-    return () => {
-      window.removeEventListener("mousemove", onMouseMove);
-    };
+    return () => mm.revert();
   }, [radius]);
 
   return (
     <div className='relative'>
       <div
         ref={spotlightRef}
-        className='spotlight fixed top-0 left-0 z-50 pointer-events-none rounded-full hidden md:block'
+        className='spotlight fixed top-0 left-0 z-50 pointer-events-none rounded-full hidden lg:block will-change-transform'
         style={{
           width: radius,
           height: radius,
