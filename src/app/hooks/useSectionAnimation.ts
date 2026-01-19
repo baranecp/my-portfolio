@@ -12,7 +12,7 @@ export function useSectionAnimation(
       if (!containerRef.current) return;
       const mm = gsap.matchMedia();
 
-      mm.add("(min-width: 1300px)", () => {
+      mm.add("(min-width: 1024px)", () => {
         const elements = gsap.utils.toArray<HTMLElement>("[data-animate]");
         if (!elements.length) return;
 
@@ -32,6 +32,8 @@ export function useSectionAnimation(
               end: animateOut ? "bottom top" : "bottom bottom",
               scrub: 1.8,
               invalidateOnRefresh: true,
+              preventOverlaps: true,
+              fastScrollEnd: true,
             },
           });
 
