@@ -3,7 +3,7 @@ import { useRef } from "react";
 
 import Hero from "@/app/components/hero/Hero";
 import About from "@/app/components/about/About";
-import Projects from "./components/Projects";
+import Projects from "@/app/components/projects/Projects";
 import TopBar from "./components/ui/TopBar";
 import LeftSocial from "./components/ui/LeftSocial";
 import RightSocial from "./components/ui/RightSocial";

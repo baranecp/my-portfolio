@@ -22,31 +22,32 @@ export default function MenuLink({
     e.preventDefault();
     onClose();
 
-    // Unlock Body Immediately
+    // 1. Unlock Body Immediately
     document.body.style.overflow = "";
     document.body.style.paddingRight = "";
 
-    // THE "RE-ANIMATE" LOGIC
     const targetId = href.slice(1);
     const targetSection = document.getElementById(targetId);
 
-    // If target exists, Reset its elements to hidden (y: 50, opacity: 0)
-    // allowing them to "animate in" again upon arrival.
-    if (targetSection) {
+    // 2. THE FIX: Only hide elements if we are on Desktop
+    // We check window.innerWidth against your animation breakpoint (1024px or 1300px)
+    const isDesktop = window.innerWidth >= 1024;
+
+    if (targetSection && isDesktop) {
       const elementsToAnimate =
         targetSection.querySelectorAll("[data-animate]");
       if (elementsToAnimate.length > 0) {
+        // Only reset to invisible if the scroll animation is actually active
         gsap.set(elementsToAnimate, { autoAlpha: 0, y: 50 });
       }
     }
 
-    // Smooth Scroll
+    // 3. Smooth Scroll
     gsap.to(window, {
       duration: 1.5,
       scrollTo: { y: href, offsetY: 50 },
       ease: "power3.inOut",
       onComplete: () => {
-        // Refresh ScrollTrigger to ensure other triggers are correct
         ScrollTrigger.refresh();
         ScrollTrigger.update();
       },

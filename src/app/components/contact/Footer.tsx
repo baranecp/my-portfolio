@@ -2,11 +2,10 @@
 
 export default function Footer() {
   return (
-    <footer className='w-full py-10 flex flex-col items-center gap-4 text-center border-t border-slate/10 mt-auto'>
+    <footer className='w-full py-10 flex flex-col items-center gap-4 text-center mt-auto'>
       <p className='text-xs font-mono text-slate/60 leading-loose max-w-lg'>
-        Designed & Built by <span className='text-accent'>Peter Baranec</span>
-        <br />
-        Built with Next.js • Tailwind CSS • GSAP 3D
+        Coded in Visual Studio Code by yours truly. Built with Next.js •
+        Tailwind CSS • GSAP, deployed with Vercel.
       </p>
     </footer>
   );
