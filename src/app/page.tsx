@@ -1,13 +1,13 @@
 "use client";
 import { useRef } from "react";
 
-import Hero from "./components/Hero";
-import About from "./components/About";
+import Hero from "@/app/components/hero/Hero";
+import About from "@/app/components/about/About";
 import Projects from "./components/Projects";
 import TopBar from "./components/ui/TopBar";
 import LeftSocial from "./components/ui/LeftSocial";
 import RightSocial from "./components/ui/RightSocial";
-import Contact from "./components/Contact";
+import Contact from "@/app/components/contact/Contact";
 
 export default function Home() {
   const heroRef = useRef<HTMLDivElement>(null);
