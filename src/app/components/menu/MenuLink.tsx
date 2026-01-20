@@ -44,22 +44,25 @@ export default function MenuLink({
       scrollTo: { y: href, offsetY: 0 },
       ease: "power3.inOut",
       onComplete: () => {
+        // Force a total refresh of GSAP's scroll math
         ScrollTrigger.refresh();
 
-        // If we landed on Home, forcefully reset the opacity to 1.
         if (targetId === "home") {
-          const homeSection = document.getElementById("home");
-          const hiddenElements =
-            homeSection?.querySelectorAll("[data-animate]");
+          // A tiny timeout ensures the production DOM is settled
+          setTimeout(() => {
+            const homeSection = document.getElementById("home");
+            const indicator = homeSection?.querySelector("[data-animate]");
 
-          if (hiddenElements) {
-            gsap.to(hiddenElements, {
-              autoAlpha: 1,
-              y: 0,
-              duration: 0.5,
-              overwrite: "auto",
-            });
-          }
+            if (indicator) {
+              gsap.to(indicator, {
+                autoAlpha: 1,
+                y: 0,
+                duration: 0.4,
+                overwrite: true,
+                onComplete: () => ScrollTrigger.update(), // Double-check positions
+              });
+            }
+          }, 100);
         }
       },
     });
