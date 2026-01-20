@@ -56,7 +56,7 @@ a {
 /*  3. LAYOUT & SECTIONS  */
 section {
   /* Responsive Padding */
-  padding-inline: 1.5rem; /* Mobile */
+  padding-inline: 1.5rem;
   padding-top: 10vh;
   padding-bottom: 10vh;
 
@@ -68,7 +68,7 @@ section {
 
 @media (min-width: 768px) {
   section {
-    padding-inline: 3rem; /* Tablet */
+    padding-inline: 3rem;
     padding-top: 15vh;
     padding-bottom: 15vh;
   }
@@ -76,7 +76,14 @@ section {
 
 @media (min-width: 1280px) {
   section {
-    padding-inline: 0; /* Desktop */
+    padding-inline: 8rem;
+  }
+
+  @media (min-width: 1536px) {
+    section {
+      padding-inline: 0;
+      margin-inline: auto;
+    }
   }
 }
 
@@ -116,18 +123,6 @@ h1 span.text-accent {
 
 h1:hover span.text-accent {
   transform: rotate(15deg) scale(1.1);
-}
-
-/* --- Bento Grid Cards (Project styles) --- */
-.md\:col-span-8,
-.md\:col-span-4 {
-  background: linear-gradient(145deg, #112240 0%, #0a192f 100%);
-  transition: box-shadow 0.3s ease;
-}
-
-.md\:col-span-8:hover,
-.md\:col-span-4:hover {
-  box-shadow: 0 20px 40px -20px rgba(100, 255, 218, 0.15);
 }
 
 /* 5. UTILITIES & HELPERS  */
@@ -178,5 +173,13 @@ h1:hover span.text-accent {
   #home [data-animate] {
     opacity: 1;
     will-change: transform, opacity;
+  }
+}
+
+@media (max-width: 1023px) {
+  [data-animate] {
+    opacity: 1 !important; /* Force visible on mobile */
+    transform: none !important; /* Reset position */
+    visibility: visible !important;
   }
 }
