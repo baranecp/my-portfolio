@@ -22,34 +22,45 @@ export default function MenuLink({
     e.preventDefault();
     onClose();
 
-    // 1. Unlock Body Immediately
+    // Unlock Body
     document.body.style.overflow = "";
     document.body.style.paddingRight = "";
 
     const targetId = href.slice(1);
     const targetSection = document.getElementById(targetId);
 
-    // 2. THE FIX: Only hide elements if we are on Desktop
-    // We check window.innerWidth against your animation breakpoint (1024px or 1300px)
-    const isDesktop = window.innerWidth >= 1024;
-
-    if (targetSection && isDesktop) {
+    // Section Re-entry Logic (Skip Home)
+    if (targetSection && targetId !== "home" && window.innerWidth >= 1024) {
       const elementsToAnimate =
         targetSection.querySelectorAll("[data-animate]");
       if (elementsToAnimate.length > 0) {
-        // Only reset to invisible if the scroll animation is actually active
         gsap.set(elementsToAnimate, { autoAlpha: 0, y: 50 });
       }
     }
 
-    // 3. Smooth Scroll
+    // Smooth Scroll with FORCED WAKE UP
     gsap.to(window, {
       duration: 1.5,
-      scrollTo: { y: href, offsetY: 50 },
+      scrollTo: { y: href, offsetY: 0 },
       ease: "power3.inOut",
       onComplete: () => {
         ScrollTrigger.refresh();
-        ScrollTrigger.update();
+
+        // If we landed on Home, forcefully reset the opacity to 1.
+        if (targetId === "home") {
+          const homeSection = document.getElementById("home");
+          const hiddenElements =
+            homeSection?.querySelectorAll("[data-animate]");
+
+          if (hiddenElements) {
+            gsap.to(hiddenElements, {
+              autoAlpha: 1,
+              y: 0,
+              duration: 0.5,
+              overwrite: "auto",
+            });
+          }
+        }
       },
     });
 
