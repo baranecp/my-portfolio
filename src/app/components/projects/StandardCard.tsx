@@ -12,9 +12,7 @@ interface StandardCardProps {
 }
 
 const cardBaseClass =
-  "group relative rounded-3xl overflow-hidden bg-[#112240] border border-white/5 transition-transform duration-300 hover:-translate-y-2 will-change-transform";
-const shadowLayerClass =
-  "absolute inset-0 -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out shadow-[0_20px_40px_-15px_rgba(100,255,218,0.3)] rounded-3xl";
+  "group relative rounded-3xl overflow-hidden bg-[#112240] border border-white/5 transition-transform duration-300 hover:-translate-y-2";
 
 export default function StandardCard({
   title,
@@ -31,8 +29,9 @@ export default function StandardCard({
   const githubHoverColor = isWip ? "md:group-hover:text-orange-400" : "";
 
   return (
-    <div data-animate className={`${className} ${cardBaseClass}`}>
-      <div className={shadowLayerClass} />
+    <div
+      data-animate
+      className={`${className} ${cardBaseClass} will-change-transform`}>
       <a
         href={href}
         target='_blank'
