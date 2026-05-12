@@ -21,9 +21,8 @@ export default function ContactContent() {
         <p
           data-animate
           className='text-[#8892b0] text-lg md:text-xl leading-relaxed'>
-          I’m currently looking for opportunities in IT, Technical Support, System Administration, or DevOps.
-          Whether you have a question, a project idea, or just want to say hi,
-          my inbox is always open.
+          I’m currently looking for opportunities in IT, Technical Support, and infrastructure-focused roles.
+          Whether you have a question, an opportunity, or just want to say hi, my inbox is always open.
         </p>
 
         <div data-animate className='pt-6'>
