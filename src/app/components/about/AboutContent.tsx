@@ -8,6 +8,7 @@ export default function AboutContent() {
         aspiring IT professional currently transitioning from frontend development
         toward
         <span className='text-accent'>
+          {' '}
           System Administration, DevOps, and backend technologies
         </span>
         . I enjoy learning how systems work behind the scenes and building strong
@@ -28,6 +29,7 @@ export default function AboutContent() {
         troubleshooting, working with systems, and continuously learning new
         technologies. Today, I’m focused on building practical IT skills in
         <span className='text-accent'>
+          {' '}
           Linux, scripting, automation, and infrastructure.
         </span>
       </p>
