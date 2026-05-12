@@ -4,19 +4,34 @@ export default function AboutContent() {
   return (
     <div className='space-y-8 text-[#8892b0] text-lg md:text-xl leading-relaxed'>
       <p data-animate>
-        Hi! I’m <span className='text-white font-semibold'>Peter</span>, a
-        developer who enjoys bridging the gap between engineering and design. My
-        journey into tech started with
-        <span className='text-accent'> Electrical Engineering</span> and a
-        background as a communications specialist in the army.
+        Hi! I’m <span className='text-white font-semibold'>Peter</span>, an
+        aspiring IT professional currently transitioning from frontend development
+        toward
+        <span className='text-accent'>
+          System Administration, DevOps, and backend technologies
+        </span>
+        . I enjoy learning how systems work behind the scenes and building strong
+        technical foundations in Linux, automation, and infrastructure.
       </p>
 
       <p data-animate>
-        Transitioning into software development allowed me to channel my
-        technical discipline into a creative outlet. Today, I focus on building
-        <span className='text-accent'> high-performance interfaces</span> that
-        feel fluid and alive.
+        My journey into tech started with hands-on technical field experience
+        installing satellite and internet equipment, along with experience in
+        hotline/L1 support, warehouse operations, operator roles, and military
+        service. Working across different environments helped me develop
+        discipline, adaptability, communication skills, and the ability to learn
+        quickly under pressure.
       </p>
+
+      <p data-animate>
+        Exploring different types of work helped me realize that I enjoy
+        troubleshooting, working with systems, and continuously learning new
+        technologies. Today, I’m focused on building practical IT skills in
+        <span className='text-accent'>
+          Linux, scripting, automation, and infrastructure.
+        </span>
+      </p>
+
 
       <div
         data-animate
@@ -37,6 +52,8 @@ export default function AboutContent() {
             "Tailwind CSS",
             "PostgreSQL",
             "Drizzle",
+            "Python",
+            "Linux"
           ].map((tech) => (
             <li key={tech} className='flex items-center gap-2'>
               <span className='text-accent/60'>▹</span> {tech}

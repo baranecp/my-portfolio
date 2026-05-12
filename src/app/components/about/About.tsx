@@ -33,13 +33,13 @@ const About = forwardRef<HTMLDivElement>((_props, externalRef) => {
           <FeatureCard
             number='01'
             title='The Background'
-            description='Electronics technician & Army Communications Specialist. Discipline turned into code.'
+            description='Technical field technician with experience in satellite and internet installations, hotline/L1 support, military service, operations, and warehouse environments. Adaptable, disciplined, and motivated to continuously grow in IT.'
           />
 
           <FeatureCard
             number='02'
             title='Interests'
-            description='Gym, Gaming, and Anime. Always searching for inspiration in different mediums.'
+            description='Linux, technology, programming, gym, gaming, anime, and IT infrastructure.'
           />
         </div>
       </div>
