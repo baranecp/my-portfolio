@@ -20,15 +20,15 @@ export default function HeroContent() {
 
       <h2
         data-animate
-        className='text-[clamp(2rem,7vw,4rem)] font-bold leading-[1.1] text-[#8892b0]'>
+        className='text-[clamp(1.5rem,6vw,3rem)] font-bold leading-[1.1] text-[#8892b0]'>
         I’m focused on Linux, automation, and building reliable technical systems.
       </h2>
 
       <p
         data-animate
         className='max-w-xl text-[#8892b0]/80 mt-8 text-lg md:text-xl leading-relaxed'>
-        I’m a self-taught developer transitioning into System Administration and DevOps.
-        Currently focused on Linux, automation, scripting, backend technologies, and building practical technical skills through real-world projects.
+        I build and work with Linux-based systems, automation, and infrastructure.
+        I’m a self-taught IT enthusiast transitioning into System Administration and DevOps, focused on developing practical skills in Linux, scripting, automation, backend technologies, and real-world systems.
       </p>
 
       <div data-animate className='mt-12 flex flex-wrap gap-4'>
