@@ -27,7 +27,7 @@ export default function HeroContent() {
       <p
         data-animate
         className='max-w-xl text-[#8892b0]/80 mt-8 text-lg md:text-xl leading-relaxed'>
-        I’m a self-taught IT enthusiast transitioning into System Administration and DevOps, focused on developing practical skills in Linux, scripting, automation, backend technologies, and real-world systems.
+        I’m a self-taught IT enthusiast transitioning into System Administration and Cloud Engineering, focused on developing practical skills in Linux, scripting, automation, and real-world infrastructure.
       </p>
 
       <div data-animate className='mt-12 flex flex-wrap gap-4'>

@@ -9,7 +9,7 @@ export default function AboutContent() {
         toward
         <span className='text-accent'>
           {' '}
-          System Administration, DevOps, and backend technologies
+          System Administration and Cloud Engineering
         </span>
         . I enjoy learning how systems work behind the scenes and building strong
         technical foundations in Linux, automation, and infrastructure.
